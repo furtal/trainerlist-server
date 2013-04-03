@@ -84,13 +84,13 @@ POST to the above URL to delete the trainer with the same ID.
 Expect HTTP 200 to signal successful deletion.
 
 
-### Trainee
+### Trainee methods
 
 TODO
 
 ### Authentication
 
-#### Login a user: `POST` to `/user/authenticate`
+#### Login a user: `POST` to `/authentication/login`
 
 To login a user, POST to the above URL with the following keys:
 

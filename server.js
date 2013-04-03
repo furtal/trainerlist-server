@@ -48,7 +48,7 @@ app.post('/trainer/:id/delete', function (req, res) {
 });
 
 // login a user
-app.post('/user/authenticate', function (req, res) {
+app.post('/authentication/login', function (req, res) {
     // TODO validate required params email and password are 'email@email.com' and 'password'
     // which is OOZER's login information.
     respondJSON(res, DEBUG_OOZER);
