@@ -9,16 +9,18 @@ var DEBUG_OOZER = {
         _rev: 'SOME-VERSION',
         isTrainer: true,
         email: 'oozer@email.com',
-        username: 'oozer'
+        username: 'oozer',
+        firstName: 'Oozer',
+        lastName: 'Silva'
     };
 
-function respondJSON (response, object) {
+function respondJSON(response, object) {
     response.setHeader('Content-Type', 'application/json');
     response.write(JSON.stringify(object));
     response.end();
 }
 
-// create user
+// create trainer
 app.post('/trainer', function (req, res) {
     // TODO validate required stuff when creating user
     // TODO validate rev and id
@@ -27,20 +29,20 @@ app.post('/trainer', function (req, res) {
 });
 
 // get trainer
-app.get('/trainer/<id>', function (req, res) {
+app.get('/trainer/:id', function (req, res) {
     // TODO validate ID is id of OOZER
     respondJSON(res, DEBUG_OOZER);
 });
 
 // edit
-app.post('/trainer/<id>', function (req, res) {
+app.post('/trainer/:id', function (req, res) {
     // TODO validate input version and id
     DEBUG_OOZER._rev = '' + (Math.random() * 1000);
     respondJSON(res, DEBUG_OOZER);
 });
 
 // delete
-app.post('/trainer/<id>/delete', function (req, res) {
+app.post('/trainer/:id/delete', function (req, res) {
     // TODO validate version and id
     respondJSON(res, {});
 });
