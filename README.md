@@ -86,7 +86,8 @@ Expect HTTP 200 to signal successful deletion.
 
 ### Trainee methods
 
-TODO
+Trainees come around in the next version.
+
 
 ### Authentication
 
@@ -97,7 +98,61 @@ To login a user, POST to the above URL with the following keys:
  - login: the username or email of the user.
  - password
 
-
-
 In this dummy server stage, you may only use `email@email.com` and `password` as credentials.
+
+
+### Events
+
+An event is an object comprised of the following keys:
+
+ - `_id`
+ - `_rev`
+ - `timestamp` - an [ISO 8601 timestamp](http://en.wikipedia.org/wiki/ISO_8601)
+ - `description` - A string (up to 40 characters) describing the event
+
+The following methods are available:
+
+
+#### Get events of an user: `GET` to `/events/upcoming/<user id>`
+
+GET to this url for a list of upcoming events. Use the following GET parameters:
+
+ - `limit` - Number of days to look ahead. Default: 30
+ - `start` - Start of data set. Default: 0
+
+
+#### Get past events: `GET` to `/events/past/<user id>
+
+GET to this url for a list of past events. Use the following GET parameters:
+
+ - `limit` - Number of days to look behind. Default: 30
+ - `start` - Start of data set. Default: 0
+
+
+#### Create an event: `POST` to `/events/<user id>/create`
+
+POST the following data to this URL to create an event
+
+ - `timestamp`
+ - `description`
+
+These keys become keys of the event object you create. Read above.
+
+
+#### Get an event: `GET` to `/events/<event id>`
+
+GET to the above URL yields the event object. This is useful for providing an edit form for the user.
+
+
+#### Edit an event: `POST` to `/events/<event id>/edit`
+
+POST to the above URL to edit a given event. Remember to send all the keys present in the event, including `_rev`.
+
+If `_rev` is outdated, you get an error, to avoid having multiple application instances editting the same event.
+
+
+#### Delete an event: `POST` to `/events/<user id>/<event id>/delete`
+
+If you POST to this URL, you delete the event. No POST data required.
+
 
