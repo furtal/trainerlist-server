@@ -2,7 +2,9 @@
     "name": "trainerlist-server",
     "version": "0.0.0",
     "dependencies": {
-        "express": "3.0.x"
+        "express": "3.0.x",
+        "request": "2.x",
+        "request-json": "0.3.x"
     },
     "scripts": {
         "start": "node server.js"
