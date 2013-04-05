@@ -10,7 +10,9 @@ var crypto = require('crypto'),
     getHash,
     stringifyWithFunctionCode,
     JsonClient = require('request-json').JsonClient,
-    db = 'http://localhost:5984/trainerlist';
+    createDbIfNecessary,
+    syncDesignDocuments,
+    db = 'http://localhost:5984/trainerlist'; // TODO this should be set in some config.
 
 JsonClient.prototype.putPure = function (path, text, callback) {
     return request({
@@ -18,7 +20,8 @@ JsonClient.prototype.putPure = function (path, text, callback) {
         uri: this.host + path,
         body: text,
         headers: {
-            authorization: this.auth
+            'Authorization': this.auth,
+            'Content-Type': 'application/json'
         }},
         function (error, response, body) {
             try {
@@ -70,6 +73,7 @@ syncDesignDocuments = module.exports.syncDesignDocuments = function (db, done) {
             if (err || (doc.error && doc.error !== 'not_found')) {
                 throw err || res.body;
             }
+
             if (doc.hash !== localHash) {
                 console.log('updating ' + name);
                 localView._rev = doc._rev;
@@ -130,14 +134,22 @@ createDbIfNecessary = module.exports.createDbIfNecessary = function (db, done) {
                 console.log('db created: ' + db);
                 done();
             });
-        } else {
-            throw JSON.stringify(doc);
+        }
+        if (doc.error) {
+            throw res;
         }
     });
 };
 
 
-module.exports.createDbIfNecessary(db, function () {
-    module.exports.syncDesignDocuments(db, function () {});
+createDbIfNecessary(db, function (err) {
+    if (err) {
+        throw err;
+    }
+    syncDesignDocuments(db, function (err) {
+        if (err) {
+            throw err;
+        }
+    });
 });
 

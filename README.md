@@ -11,11 +11,45 @@ Just open a command line and do
 
         npm install
 
+Then start a couchDB server and run
+
+        npm run-script syncdb
+
+To create the database if it does not exist, and also sync up any views that this server might need.
+
 To start the server, run
 
         npm start
 
+While your couchDB server is up.
+
 This creates a server listening on port 8080.
+
+
+Automated tests
+===============
+
+To test the server, you need to install mocha
+
+        npm install mocha -g
+
+To test, run
+
+        mocha
+
+On linux, run continuous tests with
+
+        watch mocha
+
+
+DB Maintenance
+==============
+
+Just start a couchDB server and run
+
+        npm run-script syncdb
+
+This runs syncdb.js, which will create the couchDB database if it does not exist, and update to the server the views this project depends upon.
 
 
 Available Methods

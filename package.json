@@ -4,9 +4,11 @@
     "dependencies": {
         "express": "3.0.x",
         "request": "2.x",
-        "request-json": "0.3.x"
+        "request-json": "0.3.x",
+        "mocha": "1.9.x"
     },
     "scripts": {
-        "start": "node server.js"
+        "start": "node server.js",
+        "syncdb": "node syncdb.js"
     }
 }
