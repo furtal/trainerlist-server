@@ -5,10 +5,11 @@
         "express": "3.0.x",
         "request": "2.x",
         "request-json": "0.3.x",
-        "mocha": "1.9.x"
+        "mocha": "1.9.x",
+        "couchdb-update-views": "1.0.x"
     },
     "scripts": {
         "start": "node server.js",
-        "syncdb": "node syncdb.js"
+        "syncdb": "node ./node_modules/couchdb-update-views/cli.js --config ./couchdb-config.json --docsDir design-documents/"
     }
 }
