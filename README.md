@@ -7,7 +7,7 @@ This is a server which is accessible through the REST protocol.
 Setting up
 ==========
 
-Just open a command line and do
+On a computer with nodejs and npm installed, just download the project, open a command line in its folder, and run
 
         npm install
 
@@ -15,7 +15,7 @@ Then start a couchDB server and run
 
         npm run-script syncdb
 
-To create the database if it does not exist, and also sync up any views that this server might need.
+This creates the couchDB database if it does not exist, and also syncs the design documents.
 
 To start the server, run
 
@@ -29,15 +29,19 @@ This creates a server listening on port 8080.
 Automated tests
 ===============
 
-To test the server, you need to install mocha
+To test, run
+
+        npm test
+
+or, install mocha...
 
         npm install mocha -g
 
-To test, run
-
+and run it.
+        
         mocha
 
-On linux, run continuous tests with
+On linux, you can run tests continuously with
 
         watch mocha
 

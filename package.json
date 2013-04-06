@@ -10,6 +10,7 @@
     },
     "scripts": {
         "start": "node server.js",
-        "syncdb": "node ./node_modules/couchdb-update-views/cli.js --config ./couchdb-config.json --docsDir design-documents/"
+        "syncdb": "node ./node_modules/couchdb-update-views/cli.js --config ./couchdb-config.json --docsDir design-documents/",
+        "test": "node ./node_modules/mocha/bin/mocha"
     }
 }
