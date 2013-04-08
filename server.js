@@ -2,7 +2,8 @@
 'use strict';
 
 var express = require('express'),
-    app = express();
+    app = express(),
+    Model = require('./models/model.js').Model;
 
 var DEBUG_OOZER = {
         _id: '1D-0F-00Z3R',
@@ -50,7 +51,7 @@ var PAST_EVENTS = [
 for (var i = 0; i < SOME_EVENTS.length; i += 1) {
     var item = SOME_EVENTS[i],
         date = new Date();
-    date.setDate(date.getDate + item.timestamp);
+    date.setDate(date.getDate() + item.timestamp);
     item.timestamp = date.toISOString();
 }
 
@@ -119,4 +120,14 @@ app.post('/events/:event_id/edit', function (req, res) {
     respondJSON(res, {});
 });
 
-app.listen(8080);
+function startListening (next) {
+    app.listen(8080, next);
+}
+
+// If we are the main module (I.E. being called directly, run the server.)
+if (require.main === module) {
+    // Start the server
+    Model.configDb('./couchdb-config.json', startListening);
+}
+
+module.exports.startListening = startListening;
