@@ -30,17 +30,26 @@ describe('The Model class', function () {
 
 describe('A class that inherits Model', function () {
     var model;
-    it('[config db]', function (done) {
+
+    before(function (done) {
         Model.configTestDb(dbConfigFile, done);
     });
+
     function SubModel() {
     }
+
     SubModel.prototype = new Model();
     SubModel.prototype.validate = function () {return true;};
 
-    it('is able to save', function (done) {
-        var model = new SubModel();
-        model.save(done);
+    it('gets configuration from its parent classes', function () {
+        var model = new Model(),
+            subModel = new SubModel();
+        assert(model.getClient(), '...on the model class');
+        assert(subModel.getClient(), '...on the submodel class');
+    });
+
+    it('is able to save itself', function (done) {
+        (new SubModel()).save(done);
     });
 
     it('gets id and rev from the db on save', function (done) {

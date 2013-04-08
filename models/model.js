@@ -23,13 +23,14 @@ Model.configTestDb = function (configFile, next) {
         client = Model.prototype.getClient();
 
         client.del('', function (err, res, body) {
-            // Database may not exist yet
+            // Database may not exist yet, ignore errors
             client.put('', {}, function (err, res, body) {
                 if (err) return next(err);
-                if (res.error) throw new Error(body.body);
+                if (body.error) return new Error(body.error);
+
+                next(err, data);
             });
         });
-        next(err, data);
     });
 };
 
