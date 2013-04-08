@@ -69,7 +69,7 @@ function respondJSON(response, object) {
 app.use('/', app.router);
 
 // routes in routes/trainer.js
-app.use('/', require('./routes/trainer.js'));
+app.use(require('./routes/trainer.js').middleware);
 
 // login a user
 app.post('/authentication/login', function (req, res) {
