@@ -38,10 +38,9 @@ describe('A class that inherits Model', function () {
     SubModel.prototype = new Model();
     SubModel.prototype.validate = function () {return true;};
 
-    model = new SubModel();
-
     it('is able to save', function (done) {
-        (new SubModel()).save(done);
+        var model = new SubModel();
+        model.save(done);
     });
 
     it('gets id and rev from the db on save', function (done) {
