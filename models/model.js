@@ -51,7 +51,6 @@ Model.prototype.save = function (next) {
     then = function (err, res, data) {
         if (err) return next(err);
         if (data.error) return next(new Error(data.error));
-        console.log(data);
         assert(data.id || data._id);
         assert(data.rev || data._rev);
         that._id = data.id || data._id;
@@ -91,7 +90,6 @@ Model.prototype.load = function (next) {
 Model.prototype.del = function (next) {
     var client = this.getClient(),
         delUrl = this.getPath() + '?rev=' + encodeURIComponent(this._rev);
-    console.log(delUrl);
     client.del(delUrl, function (err, res, body) {
         if (body.error) return next(new Error(body.error));
         if (err) return next(err);
