@@ -2,3 +2,6 @@
 # node_modules folder
 
 node_modules/*
+
+# crash dumps
+erl_crash.dump
