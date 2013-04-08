@@ -1,5 +1,6 @@
 var express = require('express'),
-    router = new express.Router();
+    router = new express.Router(),
+    respondJSON = require('../utils.js').respondJSON;
 
 // create trainer
 router.post('/trainer', function (req, res) {

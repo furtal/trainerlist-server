@@ -3,7 +3,8 @@
 
 var express = require('express'),
     app = express(),
-    Model = require('./models/model.js').Model;
+    Model = require('./models/model.js').Model,
+    respondJson = require('./utils.js').respondJson;
 
 var DEBUG_OOZER = {
         _id: '1D-0F-00Z3R',
@@ -53,12 +54,6 @@ for (var i = 0; i < SOME_EVENTS.length; i += 1) {
         date = new Date();
     date.setDate(date.getDate() + item.timestamp);
     item.timestamp = date.toISOString();
-}
-
-function respondJSON(response, object) {
-    response.setHeader('Content-Type', 'application/json');
-    response.write(JSON.stringify(object));
-    response.end();
 }
 
 //
