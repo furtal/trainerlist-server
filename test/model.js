@@ -95,7 +95,15 @@ describe('A class that inherits Model', function () {
         var model = new SubModel();
         model.save(function (err, data) {
             assert(!err);
-            model.del(done);
+            assert(model._id);
+            assert(model._rev);
+            model.del(function (err) {
+                if (err) return done(err);
+                model.load(function (err) {
+                    assert(err);
+                    done();
+                });
+            });
         });
     });
     it('should pass these crazy tests', function (done) {
@@ -108,18 +116,18 @@ describe('A class that inherits Model', function () {
             model2.load(function (err, data) {
                 var id = model2._id,
                     rev = model2._rev;
-                assert(!err);
-                assert.equal(model2.field1, model.field1);
-                assert.equal(model2.field1, 'asd');
-                assert(id);
-                assert(rev);
+                assert(!err, 'model.load returns no error');
+                assert.equal(model2.field1, model.field1, 'model.load didn\'t preserve field1');
+                assert.equal(model2.field1, 'asd', 'model.load didn\'t preserve field1');
+                assert(id, 'model.load loads model id from server');
+                assert(rev, 'model.load loads revision');
                 model2.newField = 'newStuff';
                 model2.save(function (err, data) {
                     assert(!err);
                     assert(model2._id == id);
                     assert(model2._rev !== rev);
                     model2.del(function (err, data) {
-                        assert(!err);
+                        if (err) return done(err);
                         model2.load(function (err, data) {
                             assert(err);
                             done();

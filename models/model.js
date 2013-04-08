@@ -6,9 +6,7 @@ function Model() {}
 
 Model._configDb = function (configFile, next) {
     fs.readFile(configFile, function (err, data) {
-        if (err) {
-            return next(err, null);
-        }
+        if (err) next(err, null);
         data = JSON.parse(data).couch;
         Model.prototype.database = data.protocol + '://' + data.host + ':' + data.port + '/' + data.database;
         next(null, data);
@@ -51,12 +49,17 @@ Model.prototype.save = function (next) {
         validation,
         then;
     then = function (err, res, data) {
-        that._id = data.id;
-        that._rev = data.rev;
-        next(err, data);
+        if (err) return next(err);
+        if (data.error) return next(new Error(data.error));
+        console.log(data);
+        assert(data.id || data._id);
+        assert(data.rev || data._rev);
+        that._id = data.id || data._id;
+        that._rev = data.rev || data._rev;
+        next(null, data);
     };
     if (!this.validate()) {
-        return next('Validation Error');
+        return next(new Error('validation_error'));
     }
     if (this._id) {
         client.put(this.getPath(), this, then);
@@ -78,6 +81,7 @@ Model.prototype.load = function (next) {
         that = this;
     client.get(this.getPath(), function (err, res, body) {
         if (err) return next(err);
+        if (body.error) return next(new Error(body.error));
         if (res.statusCode !== 200) return next('not found');
         that.extend(body);
         next(null, body);
@@ -85,8 +89,10 @@ Model.prototype.load = function (next) {
 };
 
 Model.prototype.del = function (next) {
-    var client = this.getClient()
-    client.del(this.getPath(), function (err, res, body) {
+    var client = this.getClient(),
+        delUrl = this.getPath() + '?rev=' + encodeURIComponent(this._rev);
+    console.log(delUrl);
+    client.del(delUrl, function (err, res, body) {
         if (body.error) return next(new Error(body.error));
         if (err) return next(err);
         return next(null, body);
