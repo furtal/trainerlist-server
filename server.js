@@ -51,7 +51,7 @@ for (var i = 0; i < SOME_EVENTS.length; i += 1) {
     var item = SOME_EVENTS[i],
         date = new Date();
     date.setDate(date.getDate + item.timestamp);
-    item.timestamp = date;
+    item.timestamp = date.toISOString();
 }
 
 function respondJSON(response, object) {
