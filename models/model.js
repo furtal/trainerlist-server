@@ -80,7 +80,7 @@ Model.prototype.load = function (next) {
         if (err) return next(err);
         if (res.statusCode !== 200) return next('not found');
         that.extend(body);
-        next(err, body);
+        next(null, body);
     });
 };
 
@@ -88,7 +88,8 @@ Model.prototype.del = function (next) {
     var client = this.getClient()
     client.del(this.getPath(), function (err, res, body) {
         if (body.error) return next(new Error(body.error));
-        next(err, body);
+        if (err) return next(err);
+        return next(null, body);
     });
 };
 

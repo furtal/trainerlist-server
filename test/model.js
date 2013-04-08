@@ -17,6 +17,15 @@ describe('The Model class', function () {
             client = (new Model()).getClient();
         assert.equal(client.prototype, (new JsonClient()).prototype, 'getClient is a JsonClient');
     });
+    it('should be able to be extended when receiving new data', function () {
+        var model = new Model();
+        model.extend({
+            "new": "data",
+            "from": "server"
+        });
+        assert.equal(model["new"], "data");
+        assert.equal(model["from"], "server");
+    });
 });
 
 describe('A class that inherits Model', function () {
