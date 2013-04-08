@@ -61,32 +61,15 @@ function respondJSON(response, object) {
     response.end();
 }
 
-// create trainer
-app.post('/trainer', function (req, res) {
-    // TODO validate required stuff when creating user
-    // TODO validate rev and id
-    var newUser = {};
-    respondJSON(res, newUser);
-});
+//
+// URL routes
+//
 
-// get trainer
-app.get('/trainer/:id', function (req, res) {
-    // TODO validate ID is id of OOZER
-    respondJSON(res, DEBUG_OOZER);
-});
+// routes in this file
+app.use('/', app.router);
 
-// edit
-app.post('/trainer/:id', function (req, res) {
-    // TODO validate input version and id
-    DEBUG_OOZER._rev = '' + (Math.random() * 1000);
-    respondJSON(res, DEBUG_OOZER);
-});
-
-// delete
-app.post('/trainer/:id/delete', function (req, res) {
-    // TODO validate version and id
-    respondJSON(res, {});
-});
+// routes in routes/trainer.js
+app.use('/', require('./routes/trainer.js'));
 
 // login a user
 app.post('/authentication/login', function (req, res) {
