@@ -77,11 +77,10 @@ describe('A class that inherits Model', function () {
         var model = new SubModel();
         model.validate = function () {return false};
         model.save(function (err, data) {
-            assert(err);
+            assert(err, 'there should be a validation error here');
             model.validate = SubModel.prototype.validate;
-            model.save(done);
+            done();
         });
-        
     });
     it('should load', function (done) {
         var model = new SubModel();
