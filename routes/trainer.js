@@ -1,13 +1,41 @@
 var express = require('express'),
     router = new express.Router(),
+    Trainer = require('../models/trainer.js').Trainer,
     respondJSON = require('../utils.js').respondJSON;
+
 
 // create trainer
 router.post('/trainer', function (req, res) {
-    // TODO validate required stuff when creating user
-    // TODO validate rev and id
-    var newUser = {};
-    respondJSON(res, newUser);
+    var trainer = new Trainer();
+
+    trainer.extend({
+        username: req.body.username,
+        email: req.body.email,
+        firstName: req.body.firstName,
+        lastName: req.body.lastName
+    });
+
+    // TODO setPassword
+    if (!req.body.password) {
+        res.status(400);
+        respondJSON(res, {error: 'not_valid'});
+        return;
+    }
+
+    if (!trainer.validate()) {
+        res.status(400); // Bad request
+        respondJSON(res, {error: 'not_valid'});
+        return;
+    }
+
+    trainer.save(function (err, data) {
+        if (err) {
+            res.status(500);
+            respondJSON(res, {error: 'db_error'});
+            return;
+        }
+        respondJSON(res, trainer);
+    });
 });
 
 // get trainer

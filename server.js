@@ -56,6 +56,9 @@ for (var i = 0; i < SOME_EVENTS.length; i += 1) {
     item.timestamp = date.toISOString();
 }
 
+// Body parser
+app.use(express.bodyParser());
+
 //
 // URL routes
 //
