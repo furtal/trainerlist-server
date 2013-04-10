@@ -1,12 +1,15 @@
 var JsonClient = require('request-json').JsonClient,
-    assert = require('assert');
+    assert = require('assert'),
+    Model = require('../models/model.js').Model;
 
 describe('Trainer app', function () {
-    var client = new JsonClient('http://localhost:8080');
+    var client = new JsonClient('http://localhost:8081');
 
     before(function (done) {
         var server = require('../server.js');
-        server.startListening(done);
+        Model.configTestDb(__dirname + '/../couchdb-config-test.json', function () {
+            server.startListening(8081, done);
+        });
     });
 
     it('should allow us to create trainers', function () {
@@ -18,7 +21,7 @@ describe('Trainer app', function () {
             password: 'mySecret',
         };
         client.post('/trainer', trainerDoc, function (err, res, data) {
-            assert(!err, 'response is OK');
+            assert(!err, err);
             assert.equal(res.statusCode, 200);
             assert(data._id, 'server sends _id');
             assert(data._rev, 'server sends _rev');

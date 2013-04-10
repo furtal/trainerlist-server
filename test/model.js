@@ -1,16 +1,13 @@
 var assert = require('assert'),
-    dbConfigFile = __dirname + '/../couchdb-config.json',
+    dbConfigFile = __dirname + '/../couchdb-config-test.json',
     Model = require('../models/model.js').Model
 
 describe('The Model class', function () {
     it('should read config information for the database', function (done) {
-        Model.configDb(dbConfigFile, function (err, data) {
+        Model.configTestDb(dbConfigFile, function (err, data) {
             assert(Model.prototype.database, 'model has a database property which is an URL');
             done(err, data);
         });
-    });
-    it('should configTestDb for this test though', function (done) {
-        Model.configTestDb(dbConfigFile, done);
     });
     it('should create JsonClients', function () {
         var JsonClient = require('request-json').JsonClient,
@@ -54,22 +51,27 @@ describe('A class that inherits Model', function () {
 
     it('gets id and rev from the db on save', function (done) {
         var model = new SubModel();
-        model.save(function (err, data) {
+        model.save(function (err) {
             assert(!err);
             assert(model._rev);
             assert(model._id);
-            done(err, data);
+            done();
         });
     });
 
     it('is able to update (as opposed to save a new instance', function (done) {
         model = new SubModel();
-        model._id = 'an-id';
-        model.save(function (err, data) {
-
-            assert.equal(data.id, 'an-id');
-            assert.equal(data.id, model._id);
-            done();
+        model.save(function (err) {
+            assert(!err, err);
+            model.aField = '123';
+            model.save(function (err) {
+                assert(!err, err);
+                model.aField = 'something else';
+                model.load(function (err) {
+                    assert.equal(model.aField, '123');
+                    done();
+                });
+            });
         });
     });
 
@@ -84,16 +86,13 @@ describe('A class that inherits Model', function () {
     });
     it('should load', function (done) {
         var model = new SubModel();
-        model._id = 'some-id';
         model.someField = 'some-field';
         model.save(function (err, data) {
-            var model = new SubModel();
-            assert(!err);
-            model._id = 'some-id';
+            model.someField = 'something else';
+            assert(!err, err);
             model.load(function () {
-                assert(!err);
-                assert.equal(model._id, 'some-id');
-                assert(model.someField);
+                assert(!err, err);
+                assert.equal(model.someField, 'some-field');
                 done();
             });
         });

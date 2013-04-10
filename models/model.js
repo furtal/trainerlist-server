@@ -19,7 +19,7 @@ Model.configTestDb = function (configFile, next) {
     Model._configDb(configFile, function (err, data) {
         var client;
         if (err) return next(err, data);
-        Model.prototype.database += '-test'
+
         client = Model.prototype.getClient();
 
         client.del('', function (err, res, body) {
