@@ -113,6 +113,7 @@ describe('A class that inherits Model', function () {
             });
         });
     });
+
     it('should pass these crazy tests', function (done) {
         var model = new SubModel();
         model.field1 = 'asd';
@@ -143,5 +144,44 @@ describe('A class that inherits Model', function () {
                 });
             });
         });
+    });
+
+    it('should pass these crazy tests (promise version)', function (done) {
+        var model = new SubModel(),
+            model2 = new SubModel(),
+            id,
+            rev;
+        model.field1 = 'asd';
+        model.pSave()
+            .then(function () {
+                model2._id = model._id;
+                return model2.pLoad();
+            })
+            .then(function () {
+                id = model2._id,
+                rev = model2._rev;
+                assert.equal(model2.field1, model.field1);
+                assert.equal(model2.field1, 'asd');
+                assert(id);
+                assert(rev);
+                model2.newField = 'newStuff';
+                return model2.pSave();
+            })
+            .then(function () {
+                assert(model2._id == id);
+                assert(model2._rev !== rev);
+                return model2.pDel();
+            })
+            .then(function () {
+                model2.pLoad()
+                    .then(function (val) {
+                        console.log(val)
+                        done(new Error('shouldnt be able to load deleted model'));
+                    })
+                    .fail(function () {
+                        done(null)
+                    });
+            })
+            .done(); // call done(err) on any errors up the chain.
     });
 });

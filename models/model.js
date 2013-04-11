@@ -1,5 +1,6 @@
 var assert = require('assert'),
     JsonClient = require('request-json').JsonClient,
+    Q = require('q'),
     fs = require('fs');
 
 function Model() {}
@@ -68,6 +69,10 @@ Model.prototype.save = function (next) {
     }
 };
 
+Model.prototype.pSave = function () {
+    return Q.nfcall(this.save.bind(this));
+};
+
 Model.prototype.extend = function (data) {
     // Extend model with data from couchDB.
     var member;
@@ -88,6 +93,10 @@ Model.prototype.load = function (next) {
     });
 };
 
+Model.prototype.pLoad = function () {
+    return Q.nfcall(this.load.bind(this));
+};
+
 Model.prototype.del = function (next) {
     var client = this.getClient(),
         delUrl = this.getPath() + '?rev=' + encodeURIComponent(this._rev);
@@ -96,6 +105,10 @@ Model.prototype.del = function (next) {
         if (err) return next(err);
         return next(null, body);
     });
+};
+
+Model.prototype.pDel = function (next) {
+    return Q.nfcall(this.del.bind(this));
 };
 
 module.exports.Model = Model;
