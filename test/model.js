@@ -90,11 +90,20 @@ describe('A class that inherits Model', function () {
         model.save(function (err, data) {
             model.someField = 'something else';
             assert(!err, err);
-            model.load(function () {
+            model.load(function (err) {
                 assert(!err, err);
                 assert.equal(model.someField, 'some-field');
                 done();
             });
+        });
+    });
+
+    it('should complain with error object when not found', function (done) {
+        var model = new SubModel();
+        model._id = 'not-exists';
+        model.load(function (err) {
+            assert.equal(err.error, 'not_found', err.error);
+            done();
         });
     });
     it('should delete', function (done) {
