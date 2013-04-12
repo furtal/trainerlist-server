@@ -54,6 +54,30 @@ describe('Trainer app', function () {
         });
     });
 
+    it('should let us update trainers', function (done) {
+        var trainerDoc = trainerFactory({
+                password: 'asd'
+            }),
+            updatedTrainerDoc;
+        client.post('/trainer', trainerDoc, function (err, res, data) {
+            assert(!err);
+            updatedTrainerDoc = trainerFactory(data);
+            updatedTrainerDoc.password = undefined;
+            updatedTrainerDoc.lastName = 'lastname';
+            client.post('/trainer/' + updatedTrainerDoc._id, updatedTrainerDoc, function (err, res, data) {
+                assert(!err);
+                assert.equal(data.lastName, 'lastname');
+                done(null);
+            });
+        });
+    });
+
+    // TODO creation/edit validation errors
+
+    // TODO update conflict (return 409)
+
+    // TODO updating password
+
     it('should allow us to retrieve trainers', function (done) {
         var trainer = trainerFactory({
             password: '123456',
@@ -61,7 +85,7 @@ describe('Trainer app', function () {
         });
         client.post('/trainer', trainer, function (err, res, data) {
             assert(!err, err);
-            client.get('/trainer/' + data._id, function () {
+            client.get('/trainer/' + data._id, function (err, res, data) {
                 assert(!err, err);
                 assert.equal(data.username, 'someone');
                 done();
