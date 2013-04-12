@@ -1,7 +1,9 @@
 'use strict';
 var Model = require('./model.js').Model;
 
-function Trainer() {}
+function Trainer(initialData) {
+    Model.call(this, initialData); // call the superclass.
+}
 
 Trainer.prototype = new Model();
 

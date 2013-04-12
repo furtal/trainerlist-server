@@ -15,7 +15,14 @@ function dbError(errObj) {
     return ret;
 }
 
-function Model() {}
+function Model(initialData) {
+    if (initialData === Object(initialData)) {
+        this.extend(initialData);
+    } else if (initialData) {
+        this._id = initialData;
+    }
+}
+
 
 Model._configDb = function (configFile, next) {
     fs.readFile(configFile, function (err, data) {
@@ -71,7 +78,7 @@ Model.prototype.save = function (next) {
         next(null, data);
     };
     if (!this.validate()) {
-        return next(new Error('validation_error'));
+        return next(new Error('invalid'));
     }
     if (this._id) {
         client.put(this.getPath(), this, then);
