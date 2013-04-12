@@ -61,16 +61,27 @@ router.get('/trainer/:trainerid', function (req, res) {
 
 // edit
 router.post('/trainer/:trainerid', function (req, res) {
-    // TODO validate input version and id
+    var trainer = req.trainer;
 
-    req.trainer.extend({
+    if (trainer._rev !== req.body._rev) {
+        res.status(409);
+        return respondJSON(res, {
+            error: 'outdated',
+            reason: 'you provided _rev ' +
+                req.body._rev +
+                ' but the most recent version is ' +
+                trainer._rev
+        });
+    }
+
+    trainer.extend({
         username: req.body.username,
         email: req.body.email,
         firstName: req.body.firstName,
         lastName: req.body.lastName
     });
 
-    if (!req.trainer.validate()) {
+    if (!trainer.validate()) {
         res.status(400); // bad request
         return respondJSON(res, {error: 'invalid'});
     }
@@ -79,12 +90,13 @@ router.post('/trainer/:trainerid', function (req, res) {
         // TODO setPassword
     }
 
-    req.trainer.pSave()
+    trainer.pSave()
         .then(function () {
-            return respondJSON(res, req.trainer);
+            return respondJSON(res, trainer);
         })
         .fail(function (err) {
-            throw err;
+            res.status(500);
+            return respondJSON(res, {error: 'db_error'});
         });
 });
 
