@@ -3,6 +3,17 @@ var assert = require('assert'),
     Q = require('q'),
     fs = require('fs');
 
+function dbError(errObj) {
+    ret = new Error();
+    ret.toString = function () {
+        return 'DbError: ' + this.reason + '(' + this.error + ')';
+    };
+    ret.reason = errObj.reason;
+    ret.error = errObj.error;
+    assert(ret.reason && ret.error);
+    return ret;
+}
+
 function Model() {}
 
 Model._configDb = function (configFile, next) {
@@ -20,7 +31,7 @@ Model.configTestDb = function (configFile, next) {
     Model._configDb(configFile, function (err, data) {
         var client;
         if (err) return next(err, data);
-        Model.prototype.database += '-test'
+
         client = Model.prototype.getClient();
 
         client.del('', function (err, res, body) {
@@ -52,7 +63,7 @@ Model.prototype.save = function (next) {
         then;
     then = function (err, res, data) {
         if (err) return next(err);
-        if (data.error) return next(new Error(data.error));
+        if (data.error) return next(dbError(data));
         assert(data.id || data._id);
         assert(data.rev || data._rev);
         that._id = data.id || data._id;
@@ -86,7 +97,7 @@ Model.prototype.load = function (next) {
         that = this;
     client.get(this.getPath(), function (err, res, body) {
         if (err) return next(err);
-        if (body.error) return next(new Error(body.error));
+        if (body.error) return next(dbError(body));
         if (res.statusCode !== 200) return next('not found');
         that.extend(body);
         next(null, body);
@@ -101,8 +112,8 @@ Model.prototype.del = function (next) {
     var client = this.getClient(),
         delUrl = this.getPath() + '?rev=' + encodeURIComponent(this._rev);
     client.del(delUrl, function (err, res, body) {
-        if (body.error) return next(new Error(body.error));
         if (err) return next(err);
+        if (body.error) return next(dbError(body));
         return next(null, body);
     });
 };

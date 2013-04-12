@@ -40,8 +40,22 @@ router.post('/trainer', function (req, res) {
 
 // get trainer
 router.get('/trainer/:id', function (req, res) {
-    // TODO validate ID is id of OOZER
-    respondJSON(res, DEBUG_OOZER);
+    var trainer = new Trainer();
+    trainer._id = req.params.id;
+    trainer.load(function (err, resp, data) {
+        if (err && err.error === 'not_found') {
+            res.status(404)
+            respondJSON(res, err);
+            return;
+        } else if (err) {
+            res.status(500);
+            respondJSON(res, {error: 'db_error'});
+            return;
+        } else {
+            respondJSON(res, trainer);
+            return;
+        }
+    });
 });
 
 // edit

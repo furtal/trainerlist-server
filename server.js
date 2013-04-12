@@ -101,14 +101,16 @@ app.post('/events/:event_id/edit', function (req, res) {
     respondJSON(res, {});
 });
 
-function startListening (next) {
-    app.listen(8080, next);
+function startListening (port, next) {
+    app.listen(port, next);
 }
 
 // If we are the main module (I.E. being called directly, run the server.)
 if (require.main === module) {
-    // Start the server
-    Model.configDb('./couchdb-config.json', startListening);
+    // Configure the database
+    Model.configDb(__dirname + '/couchdb-config.json', function () {
+        startListening(8080);
+    });
 }
 
 module.exports.startListening = startListening;
