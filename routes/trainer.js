@@ -19,7 +19,7 @@ router.post('/trainer', function (req, res) {
 
     if (!trainer.validate() || !req.body.password) {
         res.status(400); // Bad request
-        respondJSON(res, {error: 'not_valid'});
+        respondJSON(res, {error: 'invalid'});
         return;
     }
 

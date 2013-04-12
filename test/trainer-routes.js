@@ -73,7 +73,35 @@ describe('Trainer app', function () {
         });
     });
 
-    // TODO creation/edit validation errors
+    it('should fail creating when invalid info is given', function (done) {
+        var trainer = trainerFactory({
+                password: '123456',
+                username: '1@2', // usernames cant have at-signs
+            });
+        client.post('/trainer', trainer, function (err, res, data) {
+            assert(!err, err);
+            assert.equal(res.statusCode, 400);
+            assert.equal(data.error, 'invalid');
+            done();
+        });
+    });
+
+    it('should fail updating when invalid info is given', function (done) {
+        var trainer = trainerFactory({
+                password: '123456',
+            });
+        client.post('/trainer', trainer, function (err, res, data) {
+            assert(!err, err)
+
+            data.email = 'invalid crap';
+            client.post('/trainer/' + data._id, data, function (err, res, data) {
+                assert(!err, err);
+                assert.equal(res.statusCode, 400);
+                assert.equal(data.error, 'invalid');
+                done();
+            });
+        });
+    });
 
     it('should yield status 409 on update conflicts', function (done) {
         var trainer = trainerFactory({password: 'asdasd'});
