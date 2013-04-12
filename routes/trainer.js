@@ -1,3 +1,5 @@
+'use strict';
+
 var express = require('express'),
     router = new express.Router(),
     Trainer = require('../models/trainer.js').Trainer,
@@ -44,7 +46,7 @@ router.get('/trainer/:id', function (req, res) {
     trainer._id = req.params.id;
     trainer.load(function (err, resp, data) {
         if (err && err.error === 'not_found') {
-            res.status(404)
+            res.status(404);
             respondJSON(res, err);
             return;
         } else if (err) {

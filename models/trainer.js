@@ -1,3 +1,4 @@
+'use strict';
 var Model = require('./model.js').Model;
 
 function Trainer() {}
@@ -15,21 +16,21 @@ Trainer.prototype.validate = function () {
         lastName = this.lastName;
 
     // Email
-    isValid = !!email
-        && !email.match(/\s/) // no whitespace
-        && email.match(/^.+@.+\..+$/)// Has an @ sign and a dot.
-        && email.length < 255;
+    isValid = !!email &&
+        !email.match(/\s/) && // no whitespace
+        email.match(/^.+@.+\..+$/) && // Has an @ sign and a dot.
+        email.length < 255;
 
     if (!isValid) {
         return false;
     }
 
     // Username
-    isValid = !!username
-        && !username.match(/\s/) // no whitespace
-        && !username.match(/@/) // no at signs! this is how we tell if it's an username or an email
-        && username.match(/^[\w\.-_]/) // just letters, dashes and underscores
-        && username.length < 128;
+    isValid = !!username &&
+        !username.match(/\s/) && // no whitespace
+        !username.match(/@/) && // no at signs! this is how we tell if it's an username or an email
+        username.match(/^[\w\.-_]/) && // just letters, dashes and underscores
+        username.length < 128;
 
     if (!isValid) {
         return false;
@@ -37,14 +38,14 @@ Trainer.prototype.validate = function () {
 
     // firstName and lastName
     validateAName = function (name) {
-        return !!name
-            && (!name.match(/\s/)) // no whitespace
-            && name.length < 128;
-    }
+        return !!name &&
+            !name.match(/\s/) && // no whitespace
+            name.length < 128;
+    };
 
     isValid = validateAName(firstName) && validateAName(lastName);
 
     return isValid;
-}
+};
 
 module.exports.Trainer = Trainer;

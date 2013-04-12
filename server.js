@@ -4,7 +4,7 @@
 var express = require('express'),
     app = express(),
     Model = require('./models/model.js').Model,
-    respondJson = require('./utils.js').respondJson;
+    respondJSON = require('./utils.js').respondJson;
 
 var DEBUG_OOZER = {
         _id: '1D-0F-00Z3R',

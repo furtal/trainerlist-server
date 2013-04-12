@@ -1,3 +1,4 @@
+/*jshint node: true, couch: true*/
 'use strict';
 
 module.exports.views = {

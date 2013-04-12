@@ -1,10 +1,14 @@
+'use strict';
+
 var assert = require('assert'),
     designDoc = require('../design-documents/events.js');
-    mockCouchDb = function (target) {
-            // Inject an arbitrary "emit" function into the function's closure using eval()
-            return new Function('emit, args',
-                '(' + target + ').apply({}, args);');
-        };
+
+function mockCouchDb(target) {
+    /*jshint evil: true*/
+    // Inject an arbitrary "emit" function into the function's closure 
+    return new Function('emit, args',
+        '(' + target + ').apply({}, args);');
+}
 
 describe('by-timestamp view', function () {
     var viewFunc = designDoc.views['by-timestamp'];
@@ -15,13 +19,13 @@ describe('by-timestamp view', function () {
                 assert.equal(key, '1234');
                 assert.equal(val, doc);
                 done();
-            };
+            },
             mockedView = mockCouchDb(viewFunc.map);
         mockedView(emitReplacement, [doc]);
     });
 
     it("Should emit nothing on other documents", function (done) {
-        var doc = {nothing: 'here'};
+        var doc = {nothing: 'here'},
             emitReplacement = function () {
                 done('error: emit shouldn\'t be called');
             },

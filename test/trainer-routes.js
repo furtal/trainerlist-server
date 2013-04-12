@@ -1,3 +1,5 @@
+'use strict';
+
 var JsonClient = require('request-json').JsonClient,
     assert = require('assert'),
     Model = require('../models/model.js').Model;
@@ -8,7 +10,8 @@ function trainerFactory(data) {
             username: 'someone',
             firstName: 'furst',
             lastName: 'last',
-        };
+        },
+        key;
     for (key in data) {
         if (data.hasOwnProperty(key)) {
             defaults[key] = data[key];
@@ -32,6 +35,7 @@ describe('Trainer app', function () {
             password: '12345'
         });
         client.post('/trainer', trainerDoc, function (err, res, data) {
+            var member;
             assert(!err, err);
             assert.equal(res.statusCode, 200, res.statusCode);
             assert(data._id, 'server sends _id');
@@ -39,7 +43,7 @@ describe('Trainer app', function () {
             for (member in trainerDoc) {
                 if (trainerDoc.hasOwnProperty(member)) {
                     if (member !== 'password') {
-                        assert(trainerDoc[member])
+                        assert(trainerDoc[member]);
                         assert.equal(data[member], trainerDoc[member], 'equal data as sent');
                         assert(data[member], 'not undefined');
                     }
@@ -66,7 +70,6 @@ describe('Trainer app', function () {
     });
 
     it('should respond with 404 and error code on missing trainers', function (done) {
-        var trainer = trainerFactory();
         client.get('/trainer/i-do-not-exist', function (err, res, json) {
             assert(json.error);
             assert.equal(res.statusCode, 404, res.statusCode);

@@ -1,3 +1,5 @@
+'use strict';
+
 function respondJSON(response, object) {
     response.setHeader('Content-Type', 'application/json');
     response.write(JSON.stringify(object));

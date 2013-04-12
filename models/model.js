@@ -5,7 +5,7 @@ var assert = require('assert'),
     fs = require('fs');
 
 function dbError(errObj) {
-    ret = new Error();
+    var ret = new Error();
     ret.toString = function () {
         return 'DbError: ' + this.reason + '(' + this.error + ')';
     };
@@ -60,7 +60,6 @@ Model.prototype.getPath = function () {
 Model.prototype.save = function (next) {
     var client = this.getClient(),
         that = this,
-        validation,
         then;
     then = function (err, res, data) {
         if (err) return next(err);
@@ -87,11 +86,12 @@ Model.prototype.pSave = function () {
 
 Model.prototype.extend = function (data) {
     // Extend model with data from couchDB.
-    var member;
-    for (member in data) {
-        this[member] = data[member];
-    }
-}
+    var that = this;
+    Object.keys(data).forEach(function (member) {
+        that[member] = data[member];
+    });
+    // Can I use http://underscorejs.org/#extend ?
+};
 
 Model.prototype.load = function (next) {
     var client = this.getClient(),

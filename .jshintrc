@@ -11,5 +11,12 @@
     "plusplus": true,
     "undef": true,
     "unused": "vars",
-    "globalstrict": true
+    "globalstrict": true,
+    "es5": true,
+    "globals": {
+        "describe": false,
+        "it": false,
+        "before": false
+    }
+
 }

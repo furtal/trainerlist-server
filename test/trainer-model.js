@@ -1,3 +1,5 @@
+'use strict';
+
 var assert = require('assert'),
     Trainer = require('../models/trainer.js').Trainer;
 
@@ -77,17 +79,17 @@ describe('Trainer model', function () {
             invalidNames = [
                 'an@sign'
             ];
-            validNames.forEach(function (validName) {
-                trainer = trainerFactory();
-                trainer.username = validName;
-                assert.equal(trainer.validate(), true, validName + ' should be valid');
-            });
-            invalidNames.forEach(function (invalidName) {
-                trainer = trainerFactory();
-                trainer.username = invalidName;
-                assert.equal(trainer.validate(), false, invalidName + ' should be invalid');
+        validNames.forEach(function (validName) {
+            trainer = trainerFactory();
+            trainer.username = validName;
+            assert.equal(trainer.validate(), true, validName + ' should be valid');
+        });
+        invalidNames.forEach(function (invalidName) {
+            trainer = trainerFactory();
+            trainer.username = invalidName;
+            assert.equal(trainer.validate(), false, invalidName + ' should be invalid');
 
-            });
+        });
     });
     it('should validate firstName and lastName', function () {
         var trainer,
@@ -99,26 +101,26 @@ describe('Trainer model', function () {
             invalidNames = [
                 ''
             ];
-            validNames.forEach(function (validName) {
-                trainer = trainerFactory();
-                trainer.firstName = validName;
-                assert.equal(trainer.validate(), true, validName + ' should be valid as a first name');
-            });
-            validNames.forEach(function (validName) {
-                trainer = trainerFactory();
-                trainer.lastName = validName;
-                assert.equal(trainer.validate(), true, validName + ' should be valid as a last namr');
-            });
-            invalidNames.forEach(function (invalidName) {
-                trainer = trainerFactory();
-                trainer.firstName = invalidName;
-                assert.equal(trainer.validate(), false, invalidName + ' should be invalid as first name');
-            });
-            invalidNames.forEach(function (invalidName) {
-                trainer = trainerFactory();
-                trainer.lastName = invalidName;
-                assert.equal(trainer.validate(), false, invalidName + ' should be invalid as last name');
+        validNames.forEach(function (validName) {
+            trainer = trainerFactory();
+            trainer.firstName = validName;
+            assert.equal(trainer.validate(), true, validName + ' should be valid as a first name');
+        });
+        validNames.forEach(function (validName) {
+            trainer = trainerFactory();
+            trainer.lastName = validName;
+            assert.equal(trainer.validate(), true, validName + ' should be valid as a last namr');
+        });
+        invalidNames.forEach(function (invalidName) {
+            trainer = trainerFactory();
+            trainer.firstName = invalidName;
+            assert.equal(trainer.validate(), false, invalidName + ' should be invalid as first name');
+        });
+        invalidNames.forEach(function (invalidName) {
+            trainer = trainerFactory();
+            trainer.lastName = invalidName;
+            assert.equal(trainer.validate(), false, invalidName + ' should be invalid as last name');
 
-            });
+        });
     });
 });

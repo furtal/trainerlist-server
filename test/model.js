@@ -1,3 +1,4 @@
+'use strict';
 var assert = require('assert'),
     dbConfigFile = __dirname + '/../couchdb-config-test.json',
     Model = require('../models/model.js').Model;
@@ -141,7 +142,7 @@ describe('A class that inherits Model', function () {
                 model2.newField = 'newStuff';
                 model2.save(function (err, data) {
                     assert(!err);
-                    assert(model2._id == id);
+                    assert(model2._id === id);
                     assert(model2._rev !== rev);
                     model2.del(function (err, data) {
                         if (err) return done(err);
@@ -177,7 +178,7 @@ describe('A class that inherits Model', function () {
                 return model2.pSave();
             })
             .then(function () {
-                assert(model2._id == id);
+                assert(model2._id === id);
                 assert(model2._rev !== rev);
                 return model2.pDel();
             })
