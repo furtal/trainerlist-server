@@ -1,6 +1,6 @@
 var assert = require('assert'),
     dbConfigFile = __dirname + '/../couchdb-config-test.json',
-    Model = require('../models/model.js').Model
+    Model = require('../models/model.js').Model;
 
 describe('The Model class', function () {
     it('should read config information for the database', function (done) {
@@ -20,8 +20,8 @@ describe('The Model class', function () {
             "new": "data",
             "from": "server"
         });
-        assert.equal(model["new"], "data");
-        assert.equal(model["from"], "server");
+        assert.equal(model['new'], "data");
+        assert.equal(model.from, "server");
     });
 });
 
@@ -77,10 +77,11 @@ describe('A class that inherits Model', function () {
 
     it('Should validate before saving', function (done) {
         var model = new SubModel();
-        model.validate = function () {return false};
+        model.validate = function () {
+            return false;
+        };
         model.save(function (err, data) {
             assert(err, 'there should be a validation error here');
-            model.validate = SubModel.prototype.validate;
             done();
         });
     });
@@ -183,11 +184,10 @@ describe('A class that inherits Model', function () {
             .then(function () {
                 model2.pLoad()
                     .then(function (val) {
-                        console.log(val)
                         done(new Error('shouldnt be able to load deleted model'));
                     })
                     .fail(function () {
-                        done(null)
+                        done(null);
                     });
             })
             .done(); // call done(err) on any errors up the chain.
