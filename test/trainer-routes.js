@@ -91,7 +91,7 @@ describe('Trainer app', function () {
                 password: '123456',
             });
         client.post('/trainer', trainer, function (err, res, data) {
-            assert(!err, err)
+            assert(!err, err);
 
             data.email = 'invalid crap';
             client.post('/trainer/' + data._id, data, function (err, res, data) {
@@ -130,6 +130,8 @@ describe('Trainer app', function () {
             });
         });
     });
+
+    // TODO deleting trainer
 
     it('should respond with 404 and error code on missing trainers', function (done) {
         client.get('/trainer/i-do-not-exist', function (err, res, json) {

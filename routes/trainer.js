@@ -8,9 +8,7 @@ var express = require('express'),
 
 // create trainer
 router.post('/trainer', function (req, res) {
-    var trainer = new Trainer();
-
-    trainer.extend({
+    var trainer = new Trainer({
         username: req.body.username,
         email: req.body.email,
         firstName: req.body.firstName,
@@ -18,21 +16,24 @@ router.post('/trainer', function (req, res) {
     });
 
     if (!trainer.validate() || !req.body.password) {
-        res.status(400); // Bad request
-        respondJSON(res, {error: 'invalid'});
-        return;
+        return res
+            .status(400) // bad request
+            .json({error: 'invalid'});
     }
 
     // TODO setPassword
 
-    trainer.save(function (err, data) {
-        if (err) {
-            res.status(500);
-            respondJSON(res, {error: 'db_error'});
-            return;
-        }
-        respondJSON(res, trainer);
-    });
+    trainer.pSave()
+        .then(function () {
+            return res
+                .json(trainer)
+                .end();
+        })
+        .fail(function () {
+            return res
+                .status(500)
+                .json({error: 'db_error'});
+        });
 });
 
 // set req.trainer to a trainer when there is a :trainerid parameter in the URL.
@@ -50,7 +51,7 @@ router.param('trainerid', function (req, res, next, id) {
             } else {
                 res.status(500);
             }
-            respondJSON(res, err);
+            res.json(err);
         });
 });
 
@@ -64,14 +65,12 @@ router.post('/trainer/:trainerid', function (req, res) {
     var trainer = req.trainer;
 
     if (trainer._rev !== req.body._rev) {
-        res.status(409);
-        return respondJSON(res, {
-            error: 'outdated',
-            reason: 'you provided _rev ' +
-                req.body._rev +
-                ' but the most recent version is ' +
-                trainer._rev
-        });
+        var errMsg = 'you provided _rev ' + req.body._rev +
+                ' but the most recent version is ' + trainer._rev;
+        
+        return res
+            .status(409)
+            .json({error: 'outdated', reason: errMsg});
     }
 
     trainer.extend({
@@ -82,8 +81,9 @@ router.post('/trainer/:trainerid', function (req, res) {
     });
 
     if (!trainer.validate()) {
-        res.status(400); // bad request
-        return respondJSON(res, {error: 'invalid'});
+        return res
+            .status(400) // bad request
+            .json({error: 'invalid'});
     }
 
     if (req.body.password) {
