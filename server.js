@@ -4,7 +4,8 @@
 var express = require('express'),
     app = express(),
     Model = require('./models/model.js').Model,
-    respondJSON = require('./utils.js').respondJson;
+    respondJSON = require('./utils.js').respondJson,
+    errorHandler = require('./errors.js');
 
 var DEBUG_OOZER = {
         _id: '1D-0F-00Z3R',
@@ -100,6 +101,8 @@ app.get('/events/:event_id', function (req, res) {
 app.post('/events/:event_id/edit', function (req, res) {
     respondJSON(res, {});
 });
+
+app.use(errorHandler);
 
 function startListening (port, next) {
     app.listen(port, next);

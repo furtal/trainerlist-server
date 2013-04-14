@@ -80,7 +80,7 @@ describe('Trainer app', function () {
             });
         client.post('/trainer', trainer, function (err, res, data) {
             assert(!err, err);
-            assert.equal(res.statusCode, 400);
+            assert.equal(res.statusCode, 400, res.statusCode + ' is not 400');
             assert.equal(data.error, 'invalid');
             done();
         });
@@ -96,7 +96,7 @@ describe('Trainer app', function () {
             data.email = 'invalid crap';
             client.post('/trainer/' + data._id, data, function (err, res, data) {
                 assert(!err, err);
-                assert.equal(res.statusCode, 400);
+                assert.equal(res.statusCode, 400, 'status code should be 400, was ' + res.statusCode);
                 assert.equal(data.error, 'invalid');
                 done();
             });
@@ -108,7 +108,7 @@ describe('Trainer app', function () {
         client.post('/trainer', trainer, function (err, res, data) {
             data._rev = 'outdated-rev';
             client.post('/trainer/' + data._id, data, function (err2, res, data2) {
-                assert.equal(res.statusCode, 409);
+                assert.equal(res.statusCode, 409, 'statusCode should be 409, was ' + res.statusCode);
                 done(err);
             });
         });

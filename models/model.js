@@ -4,14 +4,14 @@ var assert = require('assert'),
     Q = require('q'),
     fs = require('fs');
 
-function dbError(errObj) {
+function dbError(errObj, statusCode) {
     var ret = new Error();
     ret.toString = function () {
         return 'DbError: ' + this.reason + '(' + this.error + ')';
     };
     ret.reason = errObj.reason;
     ret.error = errObj.error;
-    assert(ret.reason && ret.error);
+    ret.statusCode = statusCode || errObj.statusCode || 500;
     return ret;
 }
 
@@ -131,3 +131,4 @@ Model.prototype.pDel = function (next) {
 };
 
 module.exports.Model = Model;
+module.exports.dbError = dbError;
