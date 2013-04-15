@@ -3,7 +3,7 @@
 var express = require('express'),
     router = new express.Router(),
     Trainer = require('../models/trainer.js').Trainer,
-    dbError = require('../models/model.js').dbError,
+    errors = require('../errors.js'),
     respondJSON = require('../utils.js').respondJSON;
 
 
@@ -17,7 +17,7 @@ router.post('/trainer', function (req, res, next) {
     });
 
     if (!trainer.validate() || !req.body.password) {
-        return next(dbError({error: 'invalid'}, 400));
+        return next(errors.invalid());
     }
 
     // TODO setPassword
@@ -40,13 +40,7 @@ router.param('trainerid', function (req, res, next, id) {
             req.trainer = trainer;
             return next();
         })
-        .fail(function (err) {
-            if (err.error === 'not_found') {
-                return next(dbError(err, 404));
-            } else {
-                return next(err)
-            }
-        });
+        .fail(next);
 });
 
 // get trainer
@@ -59,7 +53,7 @@ router.post('/trainer/:trainerid', function (req, res, next) {
     var trainer = req.trainer;
 
     if (trainer._rev !== req.body._rev) {
-        return next(dbError('outdated', 409));
+        return next(errors.outdated());
     }
 
     trainer.extend({
@@ -70,7 +64,7 @@ router.post('/trainer/:trainerid', function (req, res, next) {
     });
 
     if (!trainer.validate()) {
-        return next(dbError({error: 'invalid'}, 400));
+        return next(errors.invalid());
     }
 
     if (req.body.password) {

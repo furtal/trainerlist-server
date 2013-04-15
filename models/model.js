@@ -2,18 +2,8 @@
 var assert = require('assert'),
     JsonClient = require('request-json').JsonClient,
     Q = require('q'),
-    fs = require('fs');
-
-function dbError(errObj, statusCode) {
-    var ret = new Error();
-    ret.toString = function () {
-        return 'DbError: ' + this.reason + '(' + this.error + ')';
-    };
-    ret.reason = errObj.reason;
-    ret.error = errObj.error;
-    ret.statusCode = statusCode || errObj.statusCode || 500;
-    return ret;
-}
+    fs = require('fs'),
+    errors = require('../errors.js');
 
 function Model(initialData) {
     if (initialData === Object(initialData)) {
@@ -70,7 +60,7 @@ Model.prototype.save = function (next) {
         then;
     then = function (err, res, data) {
         if (err) return next(err);
-        if (data.error) return next(dbError(data));
+        if (data.error) return next(new Error(data));
         assert(data.id || data._id);
         assert(data.rev || data._rev);
         that._id = data.id || data._id;
@@ -78,7 +68,7 @@ Model.prototype.save = function (next) {
         next(null, data);
     };
     if (!this.validate()) {
-        return next(new Error('invalid'));
+        return next(errors.invalid());
     }
     if (this._id) {
         client.put(this.getPath(), this, then);
@@ -105,8 +95,8 @@ Model.prototype.load = function (next) {
         that = this;
     client.get(this.getPath(), function (err, res, body) {
         if (err) return next(err);
-        if (body.error) return next(dbError(body));
-        if (res.statusCode !== 200) return next('not found');
+        if (res.statusCode !== 200) return next(errors.notFound());
+        if (body.error) return next(new Error(body));
         that.extend(body);
         next(null, body);
     });
@@ -121,7 +111,7 @@ Model.prototype.del = function (next) {
         delUrl = this.getPath() + '?rev=' + encodeURIComponent(this._rev);
     client.del(delUrl, function (err, res, body) {
         if (err) return next(err);
-        if (body.error) return next(dbError(body));
+        if (body.error) return next(new Error(body));
         return next(null, body);
     });
 };
@@ -131,4 +121,3 @@ Model.prototype.pDel = function (next) {
 };
 
 module.exports.Model = Model;
-module.exports.dbError = dbError;
