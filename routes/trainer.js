@@ -16,10 +16,6 @@ router.post('/trainer', function (req, res, next) {
         lastName: req.body.lastName
     });
 
-    if (!trainer.validate() || !req.body.password) {
-        return next(errors.invalid());
-    }
-
     // TODO setPassword
 
     trainer.pSave()
@@ -62,10 +58,6 @@ router.post('/trainer/:trainerid', function (req, res, next) {
         firstName: req.body.firstName,
         lastName: req.body.lastName
     });
-
-    if (!trainer.validate()) {
-        return next(errors.invalid());
-    }
 
     if (req.body.password) {
         // TODO setPassword

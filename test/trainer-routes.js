@@ -80,7 +80,7 @@ describe('Trainer app', function () {
             });
         client.post('/trainer', trainer, function (err, res, data) {
             assert(!err, err);
-            assert.equal(res.statusCode, 400, res.statusCode + ' is not 400');
+            assert.equal(res.statusCode, 400, 'status code of response should be 400');
             assert.equal(data.error, 'invalid');
             done();
         });
