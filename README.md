@@ -146,7 +146,7 @@ An event is an object comprised of the following keys:
  - `_id`
  - `_rev`
  - `timestamp` - an [ISO 8601 timestamp](http://en.wikipedia.org/wiki/ISO_8601)
- - `description` - A string (up to 40 characters) describing the event
+ - `description` - A string (up to 40 characters) describing the event. Optional.
 
 The following methods are available:
 

@@ -70,36 +70,14 @@ app.use('/', app.router);
 // routes in routes/trainer.js
 app.use(require('./routes/trainer.js').middleware);
 
+// URL routes in routes/events.js
+app.use(require('./routes/events.js').middleware);
+
 // login a user
 app.post('/authentication/login', function (req, res) {
     // TODO validate required params email and password are 'email@email.com' and 'password'
     // which is OOZER's login information.
     respondJSON(res, DEBUG_OOZER);
-});
-
-// upcoming events
-app.get('/events/upcoming/:user_id', function (req, res) {
-    respondJSON(res, SOME_EVENTS);
-});
-
-// past events
-app.get('/events/past/:user_id', function (req, res) {
-    respondJSON(res, PAST_EVENTS);
-});
-
-// create event
-app.post('/events/:user_id/create', function (req, res) {
-    respondJSON(res, {});
-});
-
-// get event
-app.get('/events/:event_id', function (req, res) {
-    respondJSON(res, {});
-});
-
-// edit event
-app.post('/events/:event_id/edit', function (req, res) {
-    respondJSON(res, {});
 });
 
 app.use(errorHandler);
