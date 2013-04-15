@@ -71,9 +71,13 @@ router.post('/trainer/:trainerid', function (req, res, next) {
 });
 
 // delete
-router.post('/trainer/:trainerid/delete', function (req, res) {
-    // TODO validate version and id
-    respondJSON(res, {});
+router.post('/trainer/:trainerid/delete', function (req, res, next) {
+    var trainer = req.trainer;
+    trainer.pDel()
+        .then(function () {
+            return respondJSON(res, trainer);
+        })
+        .fail(next);
 });
 
 module.exports = router;

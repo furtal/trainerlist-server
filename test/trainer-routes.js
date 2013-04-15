@@ -131,7 +131,23 @@ describe('Trainer app', function () {
         });
     });
 
-    // TODO deleting trainer
+    it('should allow to delete trainers', function (done) {
+        var trainer = trainerFactory({
+            password: '123456'
+        });
+        client.post('/trainer', trainer, function (err, res, data) {
+            assert(!err, err);
+            client.post('/trainer/' + data._id + '/delete', {}, function (err, res, data) {
+                assert(!err, err);
+                assert(!data.error, data.error);
+                assert.equal(res.statusCode, 200, res.statusCode);
+                client.get('/trainer/' + trainer.id, function (err, res, data) {
+                    assert(data.error === 'not_found');
+                    done();
+                });
+            });
+        });
+    });
 
     it('should respond with 404 and error code on missing trainers', function (done) {
         client.get('/trainer/i-do-not-exist', function (err, res, json) {
