@@ -5,17 +5,17 @@ var express = require('express'),
     Event = require('../models/event.js').Event;
 
 // upcoming events
-router.get('/events/upcoming', function (req, res) {
+router.get('/events/upcoming/:user_id', function (req, res) {
     respondJSON(res, SOME_EVENTS);
 });
 
 // past events
-router.get('/events/past', function (req, res) {
+router.get('/events/past/:user_id', function (req, res) {
     respondJSON(res, PAST_EVENTS);
 });
 
 // create event
-router.post('/events/create', function (req, res) {
+router.post('/events/create/:user_id', function (req, res) {
     respondJSON(res, {});
 });
 
@@ -36,3 +36,4 @@ router.post('/events/:event_id/delete', function (req, res) {
 
 
 module.exports = router;
+
