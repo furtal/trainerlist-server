@@ -55,7 +55,7 @@ describe('event app', function () {
                 }),
                 new Event({
                     description: 'event 2 days from now',
-                    timstamp: xDays(2),
+                    timestamp: xDays(2),
                     trainer: 'trainerman-id',
                 }),
                 new Event({
@@ -68,8 +68,8 @@ describe('event app', function () {
         trainer.pSave()
             .then(function () {
                 var promises = [];
-                events.forEach(function (event) {
-                    promises.push(event.pSave());
+                events.forEach(function (evt) {
+                    promises.push(evt.pSave());
                 });
                 return q.all(promises);
             })
