@@ -1,11 +1,38 @@
 'use strict';
-var Model = require('./model.js').Model;
+var Model = require('./model.js').Model,
+    q = require('q'),
+    JsonClient = require('request-json').JsonClient;
 
 function Event(initialData) {
-    Model.call(this, initialData); // call the superclass.
+    if (arguments.length <= 1) {
+        Model.call(this, initialData); // call the superclass.
+    } else {
+        Model.call(this);
+        this.start = arguments[0];
+        this.end = arguments[1];
+    }
 }
 
 Event.prototype = new Model();
+
+Event.prototype.byTimestamp = function (next) {
+    var client = this.getClient(),
+        path = '/_design/events/_view/by-timestamp',
+        query = '?startkey="' + this.start + '"&endkey="' + this.end + '"';
+    client.get(path + query, function (err, res, data) {
+        var ret;
+        if (err) return next(err);
+        if (data.error) return next(new Error(data));
+        ret = data.rows.map(function (row) {
+            return new Event(row.value);
+        });
+        return next(null, ret);
+    });
+};
+
+Event.prototype.pByTimestamp = function () {
+    return q.nfcall(this.byTimestamp.bind(this));
+};
 
 // Do some regex to validate all the fields.
 // Also make sure the required ones are there.
