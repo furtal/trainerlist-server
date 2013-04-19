@@ -122,5 +122,22 @@ describe('event app', function () {
             done();
         });
     });
+
+    it('can retrieve past events', function (done) {
+        client.get('/events/past/trainerman-id', function (err, res, data) {
+            var descriptions;
+            assert.equal(res.statusCode, 200, res.statusCode);
+            assert.equal(data.length, 3)
+            descriptions = data.map(function (val) {
+                return val.description;
+            });
+            assert.deepEqual(descriptions, [
+                'event occurring now',
+                'past event 1',
+                'past event 2'
+            ]);
+            done();
+        });
+    });
 });
 

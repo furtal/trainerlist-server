@@ -43,8 +43,21 @@ router.get('/events/upcoming/:user_id', function (req, res, next) {
 });
 
 // past events
-router.get('/events/past/:user_id', function (req, res) {
-    respondJSON(res, PAST_EVENTS);
+router.get('/events/past/:user_id', function (req, res, next) {
+    var start = new Date(),
+        end = new Date(),
+        nDays = 30; // TODO read above
+    
+    start.setDate(end.getDate() - nDays);
+
+    new Event(start, end).pByTimestamp()
+        .then(function (events) {
+            events.reverse();
+            return res
+                .json(events)
+                .end();
+        })
+        .fail(next);
 });
 
 // create event
