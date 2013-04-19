@@ -8,8 +8,8 @@ function Event(initialData) {
         Model.call(this, initialData); // call the superclass.
     } else {
         Model.call(this);
-        this.start = arguments[0];
-        this.end = arguments[1];
+        this.start = arguments[0].toISOString();
+        this.end = arguments[1].toISOString();
     }
 }
 

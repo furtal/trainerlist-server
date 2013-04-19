@@ -2,7 +2,19 @@
 var assert = require('assert'),
     Event = require('../models/event.js').Event,
     Model = require('../models/model.js').Model,
-    q = require('q');
+    q = require('q'),
+    nDays,
+    xDays;
+
+nDays = function (x) {
+    var date = new Date();
+    date.setDate(date.getDate() + x);
+    return date
+};
+
+xDays = function (x) {
+    return nDays(x).toISOString();
+};
 
 describe('Event model validations', function () {
     it('should validate required date field', function () {
@@ -59,27 +71,37 @@ describe('Event.pByTimestamp', function () {
         })
     });
 
-    it('lets us get future events by timestamp', function (done) {
-        var xDays = function (x) {
-            var date = new Date()
-            date.setDate(date.getDate() + x)
-            return date.toISOString()
-        };
+    before(function (done) {
         q.all([
             new Event({timestamp: xDays(1), description: '1'}).pSave(),
             new Event({timestamp: xDays(2), description: '2'}).pSave()
-        ]).then(function () {
-            var now = new Date(),
-                time30HoursFromNow = new Date()
-            time30HoursFromNow.setHours(time30HoursFromNow.getHours() + 30)
-            return new Event(
-                now.toISOString(),
-                time30HoursFromNow.toISOString()
-            ).pByTimestamp()
-        }).then(function (events) {
-            assert.equal(events.length, 1)
-            assert.equal(events[0].description, '1')
-            done()
+        ])
+        .then(function () {
+            done();
+        });
+    });
+
+    it('lets us get lists of events by timestamp', function (done) {
+        var now = new Date(),
+            time30HoursFromNow = new Date(),
+            query;
+        time30HoursFromNow.setHours(time30HoursFromNow.getHours() + 30);
+
+        query = new Event(now, time30HoursFromNow)
+        query.pByTimestamp().then(function (events) {
+            assert.equal(events.length, 1);
+            assert.equal(events[0].description, '1');
+            done();
         })
     });
+
+    it('gets by timestamp, sorted', function (done) {
+        var query = new Event(nDays(0), nDays(10));
+        query.pByTimestamp().then(function (events) {
+            assert.equal(events[0].description, '1')
+            assert.equal(events[1].description, '2')
+            done();
+        });
+    });
 });
+
