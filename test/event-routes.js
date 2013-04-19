@@ -31,20 +31,19 @@ describe('event app', function () {
             cmd,
             args,
             child;
-        cmd = __dirname + '/../node_modules/couchdb-update-views/cli.js'
+        cmd = __dirname + '/../node_modules/couchdb-update-views/cli.js';
         args = [
             '--config',
             __dirname + '/../couchdb-config-test.json',
             '--docsDir',
-             __dirname + '/../design-documents/'
-            ];
-        child = spawn(cmd, args)
-        child.stderr.pipe(process.stderr)
-        child.stdout.pipe(process.stdout)
+            __dirname + '/../design-documents/'
+        ];
+        child = spawn(cmd, args);
+        child.stderr.pipe(process.stderr);
         child.on('exit', function (err) {
-            assert.ok(!err)
-            done()
-        })
+            assert.ok(!err, err);
+            done();
+        });
     });
 
     before(function (done) {
@@ -118,7 +117,8 @@ describe('event app', function () {
             assert.deepEqual(descriptions, [
                 'event occurring now',
                 'event tomorrow',
-                'event 2 days from now'])
+                'event 2 days from now'
+            ]);
             done();
         });
     });

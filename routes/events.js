@@ -5,8 +5,8 @@ var express = require('express'),
     Event = require('../models/event.js').Event,
     Trainer = require('../models/trainer.js').Trainer;
 
-router.param('user_id', function (req, res, next, user_id) {
-    req.trainer = new Trainer(user_id);
+router.param('user_id', function (req, res, next, userId) {
+    req.trainer = new Trainer(userId);
     req.trainer.pLoad()
         .then(function () {
             next();
@@ -14,13 +14,13 @@ router.param('user_id', function (req, res, next, user_id) {
         .fail(next);
 });
 
-router.param('event_id', function (req, res, next, event_id) {
-    req.event = new Event(event_id);
+router.param('event_id', function (req, res, next, eventId) {
+    req.event = new Event(eventId);
     req.event.pLoad()
         .then(function () {
             next();
         })
-        .fail(next)
+        .fail(next);
 });
 
 // upcoming events for the next 30 days

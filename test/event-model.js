@@ -9,7 +9,7 @@ var assert = require('assert'),
 nDays = function (x) {
     var date = new Date();
     date.setDate(date.getDate() + x);
-    return date
+    return date;
 };
 
 xDays = function (x) {
@@ -22,28 +22,27 @@ describe('Event model validations', function () {
             timestamp: new Date().toISOString(),
         });
 
-        assert(ev.validate())
+        assert(ev.validate());
 
-        ev.timestamp = undefined
+        ev.timestamp = undefined;
 
-        assert(!ev.validate())
+        assert(!ev.validate());
     });
 
     it('should not accept anything that is not a valid ISO timestamp', function () {
         var ev = new Event({
             timestamp: +new Date()
-        })
+        });
 
-        assert(!ev.validate())
+        assert(!ev.validate());
 
-        ev.timestamp = '12-12-1234T12'
+        ev.timestamp = '12-12-1234T12';
 
-        assert(!ev.validate())
+        assert(!ev.validate());
     });
 });
 
 describe('Event.pByTimestamp', function () {
-    var events = [];
     before(function (done) {
         Model.configTestDb(
             __dirname + '/../couchdb-config-test.json',
@@ -55,20 +54,20 @@ describe('Event.pByTimestamp', function () {
             cmd,
             args,
             child;
-        cmd = __dirname + '/../node_modules/couchdb-update-views/cli.js'
+        cmd = __dirname + '/../node_modules/couchdb-update-views/cli.js';
         args = [
             '--config',
             __dirname + '/../couchdb-config-test.json',
             '--docsDir',
-             __dirname + '/../design-documents/'
-            ];
-        child = spawn(cmd, args)
-        child.stderr.pipe(process.stderr)
-        child.stdout.pipe(process.stdout)
+            __dirname + '/../design-documents/'
+        ];
+        child = spawn(cmd, args);
+        child.stderr.pipe(process.stderr);
+
         child.on('exit', function (err) {
-            assert.ok(!err)
-            done()
-        })
+            assert.ok(!err, err);
+            done();
+        });
     });
 
     before(function (done) {
@@ -87,19 +86,19 @@ describe('Event.pByTimestamp', function () {
             query;
         time30HoursFromNow.setHours(time30HoursFromNow.getHours() + 30);
 
-        query = new Event(now, time30HoursFromNow)
+        query = new Event(now, time30HoursFromNow);
         query.pByTimestamp().then(function (events) {
             assert.equal(events.length, 1);
             assert.equal(events[0].description, '1');
             done();
-        })
+        });
     });
 
     it('gets by timestamp, sorted', function (done) {
         var query = new Event(nDays(0), nDays(10));
         query.pByTimestamp().then(function (events) {
-            assert.equal(events[0].description, '1')
-            assert.equal(events[1].description, '2')
+            assert.equal(events[0].description, '1');
+            assert.equal(events[1].description, '2');
             done();
         });
     });
