@@ -1,8 +1,9 @@
 Trainerlist Server
 ------------------
 
-This is a server which is accessible through the REST protocol.
+This is a server written in node.js which is accessible through the REST protocol.
 
+david-dm: [![](https://david-dm.org/furtal/trainerlist-server.png)](https://david-dm.org/furtal/trainerlist-server)
 
 Setting up
 ==========
