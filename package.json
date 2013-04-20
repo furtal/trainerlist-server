@@ -6,6 +6,7 @@
         "request": "2.x",
         "request-json": "0.3.x",
         "mocha": "1.9.x",
+        "q": "0.9.x",
         "couchdb-update-views": "1.0.x"
     },
     "scripts": {
