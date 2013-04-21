@@ -31,8 +31,9 @@ describe('event app', function () {
             cmd,
             args,
             child;
-        cmd = __dirname + '/../node_modules/couchdb-update-views/cli.js';
+        cmd = 'node';
         args = [
+            __dirname + '/../node_modules/couchdb-update-views/cli.js',
             '--config',
             __dirname + '/../couchdb-config-test.json',
             '--docsDir',
