@@ -42,10 +42,11 @@ Event.prototype.validate = function () {
         return false;
     }
 
-    // our date is not an integer
-    if (this.timestamp.toString() !== this.timestamp) {
+    // the timestamp is not an int
+    if (+this.timestamp === this.timestamp) {
         return false;
     }
+
     // our date string can be used to create a valid date with a valid amount of seconds 
     if (!new Date(this.timestamp).valueOf()) {
         return false;

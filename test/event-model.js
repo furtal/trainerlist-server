@@ -3,18 +3,7 @@ var assert = require('assert'),
     Event = require('../models/event.js').Event,
     Model = require('../models/model.js').Model,
     q = require('q'),
-    nDays,
-    xDays;
-
-nDays = function (x) {
-    var date = new Date();
-    date.setDate(date.getDate() + x);
-    return date;
-};
-
-xDays = function (x) {
-    return nDays(x).toISOString();
-};
+    xDays = require('../utils.js').relativeTimestamp;
 
 describe('Event model validations', function () {
     it('should validate required date field', function () {
@@ -95,7 +84,7 @@ describe('Event.pByTimestamp', function () {
     });
 
     it('gets by timestamp, sorted', function (done) {
-        var query = new Event(nDays(0), nDays(10));
+        var query = new Event(xDays(0), xDays(10));
         query.pByTimestamp().then(function (events) {
             assert.equal(events[0].description, '1');
             assert.equal(events[1].description, '2');

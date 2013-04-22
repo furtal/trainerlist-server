@@ -3,7 +3,8 @@
 var express = require('express'),
     router = new express.Router(),
     Event = require('../models/event.js').Event,
-    Trainer = require('../models/trainer.js').Trainer;
+    Trainer = require('../models/trainer.js').Trainer,
+    xDays = require('../utils.js').relativeTimestamp;
 
 router.param('user_id', function (req, res, next, userId) {
     req.trainer = new Trainer(userId);
@@ -25,12 +26,11 @@ router.param('event_id', function (req, res, next, eventId) {
 
 // upcoming events for the next 30 days
 router.get('/events/upcoming/:user_id', function (req, res, next) {
-    var start = new Date(),
-        end = new Date(),
-        nDays = 30; // TODO this is only a Refault
+    var nDays = 30, // TODO this is only a Refault
+        start = new Date(),
+        end = xDays(nDays); // n days from now
 
     start.setHours(start.getHours() - 1);
-    end.setDate(end.getDate() + nDays);
 
     // Gets events between `start` and `end`
     new Event(start, end).pByTimestamp()
@@ -44,11 +44,9 @@ router.get('/events/upcoming/:user_id', function (req, res, next) {
 
 // past events
 router.get('/events/past/:user_id', function (req, res, next) {
-    var start = new Date(),
-        end = new Date(),
-        nDays = 30; // TODO read above
-    
-    start.setDate(end.getDate() - nDays);
+    var nDays = 30, // TODO read above
+        start = xDays(-nDays),
+        end = new Date();
 
     new Event(start, end).pByTimestamp()
         .then(function (events) {

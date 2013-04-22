@@ -5,7 +5,8 @@ var JsonClient = require('request-json').JsonClient,
     Model = require('../models/model.js').Model,
     Trainer = require('../models/trainer.js').Trainer,
     Event = require('../models/event.js').Event,
-    q = require('q');
+    q = require('q'),
+    xDays = require('../utils.js').relativeTimestamp;
 
 
 describe('event app', function () {
@@ -48,13 +49,7 @@ describe('event app', function () {
     });
 
     before(function (done) {
-        var xDays = function (x) {
-                // get ISO timestamp x days ahead of now.
-                var ret = new Date();
-                ret.setDate(ret.getDate() + x);
-                return ret.toISOString();
-            },
-            events = [
+        var events = [
                 new Event({
                     description: 'event far behind',
                     timestamp: xDays(-32),
