@@ -135,5 +135,28 @@ describe('event app', function () {
             done();
         });
     });
+
+    it('allows to create events', function (done) {
+        var evt = new Event({
+            timestamp: new Date(),
+            description: 'some description',
+        });
+        client.post('/events/trainerman-id/create', evt, function (err, res, data) {
+            var created;
+            assert(!err, err);
+            assert.equal(res.statusCode, 200, res.statusCode);
+
+            created = new Event(data._id)
+
+            assert.equal(data.timestamp, evt.timestamp.toISOString());
+            assert.equal(data.description, evt.description);
+
+            created.pLoad()
+                .then(function () {
+                    done();
+                })
+                .fail(done);
+        })
+    });
 });
 

@@ -157,7 +157,6 @@ The following methods are available:
 GET to this url for a list of upcoming events. Use the following GET parameters:
 
  - `limit` - Number of days to look ahead. Default: 30
- - `start` - Start of data set. Default: 0
 
 
 #### Get past events: `GET` to `/events/past/<user id>
@@ -165,7 +164,6 @@ GET to this url for a list of upcoming events. Use the following GET parameters:
 GET to this url for a list of past events. Use the following GET parameters:
 
  - `limit` - Number of days to look behind. Default: 30
- - `start` - Start of data set. Default: 0
 
 
 #### Create an event: `POST` to `/events/<user id>/create`

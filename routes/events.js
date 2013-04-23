@@ -59,8 +59,15 @@ router.get('/events/past/:user_id', function (req, res, next) {
 });
 
 // create event
-router.post('/events/create/:user_id', function (req, res) {
-    respondJSON(res, {});
+router.post('/events/:user_id/create', function (req, res, next) {
+    var evt = new Event(req.body);
+    return evt.pSave()
+        .then(function () {
+            return res
+                .json(evt)
+                .end();
+        })
+        .fail(next);
 });
 
 // get event
