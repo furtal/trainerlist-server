@@ -14,9 +14,12 @@ On a computer with nodejs and npm installed, just download the project, open a c
 
 Then start a couchDB server and run
 
+        npm run-script createdb
         npm run-script syncdb
 
-This creates the couchDB database if it does not exist, and also syncs the design documents.
+If the database already exists in couchDB, you will get an error from the first command saying so.
+
+The second command syncs the design documents required for all the database queries.
 
 To start the server, run
 
