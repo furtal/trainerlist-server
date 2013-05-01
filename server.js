@@ -57,8 +57,13 @@ for (var i = 0; i < SOME_EVENTS.length; i += 1) {
     item.timestamp = date.toISOString();
 }
 
+
+// Request logger
+app.use(express.logger('tiny'));
+
 // Body parser
 app.use(express.bodyParser());
+
 
 //
 // URL routes
@@ -90,7 +95,9 @@ function startListening (port, next) {
 if (require.main === module) {
     // Configure the database
     Model.configDb(__dirname + '/couchdb-config.json', function () {
-        startListening(8080);
+        startListening(8080, function () {
+            console.log('trainerlist server listening on port 8080');
+        });
     });
 }
 
