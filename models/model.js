@@ -8,7 +8,7 @@ var assert = require('assert'),
 function Model(initialData) {
     if (initialData === Object(initialData)) {
         this.extend(initialData);
-    } else if (initialData) {
+    } else if (typeof initialData === 'string') {
         this._id = initialData;
     }
 }

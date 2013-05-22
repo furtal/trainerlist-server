@@ -103,6 +103,31 @@ describe('Trainer app', function () {
         });
     });
 
+    it('has a way of us getting a trainer list', function (done) {
+        var trainers = [
+                trainerFactory({_id: 't1', password: '123456'}),
+                trainerFactory({_id: 't2', password: '123456'}),
+                trainerFactory({_id: 't3', password: '123456'})
+            ],
+            doneCount = 0;
+        trainers.forEach(function (trainer) {
+            client.post('/trainer', trainer, function (err) {
+                assert(!err);
+                doneCount += 1;
+                doneAll();
+            });
+        });
+        function doneAll() {
+            if (doneCount === 3) {
+                client.get('/debug/trainer-list', function (err, res, data) {
+                    assert(data.every(function (val) {
+                        return trainers.indexOf(val) > -1;
+                    }));
+                });
+            }
+        }
+    })
+
     it('should yield status 409 on update conflicts', function (done) {
         var trainer = trainerFactory({password: 'asdasd'});
         client.post('/trainer', trainer, function (err, res, data) {

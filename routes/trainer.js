@@ -80,5 +80,15 @@ router.post('/trainer/:trainerid/delete', function (req, res, next) {
         .fail(next);
 });
 
+// DEBUG: trainer list
+router.get('/debug/trainer-list', function (req, res, next) {
+    var trainer = new Trainer();
+    trainer.pAll()
+        .then(function (list) {
+            res.json(list).end();
+        })
+        .fail(next);
+})
+
 module.exports = router;
 

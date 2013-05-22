@@ -50,4 +50,20 @@ Trainer.prototype.validate = function () {
     return isValid;
 };
 
+Trainer.prototype.all = function (next) {
+    var client = this.getClient(),
+        that = this;
+    client.get('/_design/trainer/_views/all', function (err, res, data) {
+        if (err) {
+            return next(err);
+        }
+        console.log(data)
+        return next(data);
+    })
+}
+
+Trainer.prototype.pAll = function () {
+    return Q.nfcall(this.all.bind(this))
+}
+
 module.exports.Trainer = Trainer;
