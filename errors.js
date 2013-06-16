@@ -2,10 +2,15 @@
 'use strict';
 
 module.exports.errorHandler = function (err, req, res, next) {
+    var statusCode = err.statusCode || 500;
     res
-        .status(err.statusCode || 500)
+        .status(statusCode)
         .json(err)
         .end();
+
+    if (statusCode === 500 && err.stack) {
+        console.log(err.stack);
+    }
 };
 
 module.exports.notFound = function () {
