@@ -62,7 +62,7 @@ Model.prototype.save = function (next) {
         if (err) return next(err);
         if (data.error === 'conflict') return next(errors.outdated());
         if (data.error === 'bad_request') return next(errors.invalid(data.error.reason));
-        if (data.error) return next(new Error(data));
+        if (data.error) return next(errors.fromCouchData(data));
         assert(data.id || data._id);
         assert(data.rev || data._rev);
         that._id = data.id || data._id;
@@ -98,7 +98,7 @@ Model.prototype.load = function (next) {
     client.get(this.getPath(), function (err, res, body) {
         if (err) return next(err);
         if (res.statusCode !== 200) return next(errors.notFound());
-        if (body.error) return next(new Error(body));
+        if (body.error) return next(errors.fromCouchData(body));
         that.extend(body);
         next(null, body);
     });
@@ -113,7 +113,7 @@ Model.prototype.del = function (next) {
         delUrl = this.getPath() + '?rev=' + encodeURIComponent(this._rev);
     client.del(delUrl, function (err, res, body) {
         if (err) return next(err);
-        if (body.error) return next(new Error(body));
+        if (body.error) return next(errors.fromCouchData(body));
         return next(null, body);
     });
 };

@@ -25,3 +25,14 @@ module.exports.outdated = function () {
     return {error: 'outdated', statusCode: 409};
 };
 
+module.exports.fromCouchData = function (data, err) {
+    var originalToString;
+    err = err || new Error(data.error);
+    originalToString = err.toString;
+    err.error = data.error;
+    err.reason = data.reason;
+    err.toString = function () {
+        return originalToString.call(this) + '(' + data.reason + ')';
+    };
+    return err;
+};
