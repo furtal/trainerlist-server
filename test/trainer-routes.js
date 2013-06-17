@@ -133,15 +133,17 @@ describe('Trainer app', function () {
 
     it('should allow to delete trainers', function (done) {
         var trainer = trainerFactory({
-            password: '123456'
-        });
+                password: '123456'
+            }),
+            id;
         client.post('/trainer', trainer, function (err, res, data) {
             assert(!err, err);
-            client.post('/trainer/' + data._id + '/delete', {}, function (err, res, data) {
+            id = data._id;
+            client.post('/trainer/' + id + '/delete', {}, function (err, res, data) {
                 assert(!err, err);
                 assert(!data.error, data.error);
                 assert.equal(res.statusCode, 200, res.statusCode);
-                client.get('/trainer/' + trainer.id, function (err, res, data) {
+                client.get('/trainer/' + id, function (err, res, data) {
                     assert(data.error === 'not_found');
                     done();
                 });
