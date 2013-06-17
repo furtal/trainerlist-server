@@ -10,6 +10,10 @@ module.exports.errorHandler = function (err, req, res, next) {
 
     if (statusCode === 500 && err.stack) {
         console.log(err.stack);
+        console.log('--- Request data ---');
+        console.log(req.body);
+        console.log('--- Request headers ---');
+        console.log(req.body);
     }
 };
 
