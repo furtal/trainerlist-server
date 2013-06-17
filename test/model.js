@@ -60,6 +60,38 @@ describe('A class that inherits Model', function () {
         });
     });
 
+    it('validates _rev, returning 409 on a bad _rev', function (done) {
+        var model = new SubModel();
+        model.field1 = '123';
+        model.pSave()
+            .then(function () {
+                model._rev = '5-wrong-rev';
+                return model.pSave();
+            })
+            .then(function () {
+                throw new Error('should fail to save with wrong rev!');
+            }, function (err) {
+                assert.equal(err.statusCode, 409, 'should fail with 409');
+            })
+            .nodeify(done);
+    });
+
+    it('validates _rev, returning 409 on no _rev', function (done) {
+        var model = new SubModel();
+        model.field1 = '123';
+        model.pSave()
+            .then(function () {
+                delete model._rev;
+                return model.pSave();
+            })
+            .then(function () {
+                throw new Error('should fail to save with wrong rev!');
+            }, function (err) {
+                assert.equal(err.statusCode, 409, 'should fail with 409');
+            })
+            .nodeify(done);
+    });
+
     it('is able to update (as opposed to save a new instance', function (done) {
         model = new SubModel();
         model.save(function (err) {
@@ -123,7 +155,7 @@ describe('A class that inherits Model', function () {
             });
         });
     });
-
+    
     it('should pass these crazy tests', function (done) {
         var model = new SubModel();
         model.field1 = 'asd';

@@ -60,6 +60,8 @@ Model.prototype.save = function (next) {
         then;
     then = function (err, res, data) {
         if (err) return next(err);
+        if (data.error === 'conflict') return next(errors.outdated());
+        if (data.error === 'bad_request') return next(errors.invalid(data.error.reason));
         if (data.error) return next(new Error(data));
         assert(data.id || data._id);
         assert(data.rev || data._rev);

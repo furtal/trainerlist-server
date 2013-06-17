@@ -17,8 +17,8 @@ module.exports.notFound = function () {
     return {error: 'not_found', statusCode: 404};
 };
 
-module.exports.invalid = function () {
-    return {error: 'invalid', statusCode: 400};
+module.exports.invalid = function (reason) {
+    return {error: 'invalid', statusCode: 400, reason: reason};
 };
 
 module.exports.outdated = function () {
