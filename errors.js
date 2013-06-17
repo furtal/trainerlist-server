@@ -13,7 +13,7 @@ module.exports.errorHandler = function (err, req, res, next) {
         console.log('--- Request data ---');
         console.log(req.body);
         console.log('--- Request headers ---');
-        console.log(req.body);
+        console.log(req.headers);
     }
 };
 
