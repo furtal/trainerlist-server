@@ -50,4 +50,8 @@ Trainer.prototype.validate = function () {
     return isValid;
 };
 
-module.exports.Trainer = Trainer;
+exports.validateTrainer = function (trainer) {
+    return Trainer.prototype.validate.call(trainer);
+};
+
+exports.Trainer = Trainer;

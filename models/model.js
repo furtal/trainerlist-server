@@ -13,20 +13,19 @@ function Model(initialData) {
     }
 }
 
+var couchDbAddress = exports.couchDbAddress = '';
 
-Model._configDb = function (configFile, next) {
+Model.configDb = exports.configDb = function (configFile, next) {
     fs.readFile(configFile, function (err, data) {
         if (err) next(err, null);
         data = JSON.parse(data).couch;
-        Model.prototype.database = data.protocol + '://' + data.host + ':' + data.port + '/' + data.database;
+        Model.prototype.database = couchDbAddress = data.protocol + '://' + data.host + ':' + data.port + '/' + data.database;
         next(null, data);
     });
 };
 
-Model.configDb = Model._configDb;
-
-Model.configTestDb = function (configFile, next) {
-    Model._configDb(configFile, function (err, data) {
+Model.configTestDb = exports.configTestDb = function (configFile, next) {
+    Model.configDb(configFile, function (err, data) {
         var client;
         if (err) return next(err, data);
 
@@ -80,7 +79,31 @@ Model.prototype.save = function (next) {
 };
 
 Model.prototype.pSave = function () {
-    return Q.nfcall(this.save.bind(this));
+    return Q.ninvoke(this.save.bind(this));
+};
+
+exports.pSave = function (model, options) {
+    var client = new JsonClient(couchDbAddress),
+        promise;
+    if (options.validator && !options.validator(model)) {
+        return errors.invalid();
+    }
+    if (model._id) {
+        promise = Q.nfcall(client.put.bind(client), '/' + model._id, model);
+    } else {
+        promise = Q.nfcall(client.post.bind(client), '/', model);
+    }
+    promise.then(function (result) {
+        var data = result[1];
+        if (data.error === 'conflict') throw errors.outdated();
+        if (data.error === 'bad_request') throw errors.invalid(data.error.reason);
+        if (data.error) throw errors.fromCouchData(data);
+        assert(data.id || data._id);
+        assert(data.rev || data._rev);
+        model._id = data.id || data._id;
+        model._rev = data.rev || data._rev;
+    });
+    return promise;
 };
 
 Model.prototype.extend = function (data) {
@@ -108,6 +131,19 @@ Model.prototype.pLoad = function () {
     return Q.nfcall(this.load.bind(this));
 };
 
+exports.pLoad = function (id, options) {
+    var client = new JsonClient(couchDbAddress);
+    return Q.nfcall(client.get.bind(client), '/' + id)  // TODO try invoke
+        .then(function (result) {
+            var res = result[0],
+                data = result[1];
+            if (res.statusCode === 404) throw errors.notFound();
+            if (data.error) throw errors.fromCouchData(data);
+            if (options.validator && !options.validator(data)) throw errors.invalid('the database returned an invalid object');
+            return data;
+        });
+};
+
 Model.prototype.del = function (next) {
     var client = this.getClient(),
         delUrl = this.getPath() + '?rev=' + encodeURIComponent(this._rev);
@@ -120,6 +156,16 @@ Model.prototype.del = function (next) {
 
 Model.prototype.pDel = function (next) {
     return Q.nfcall(this.del.bind(this));
+};
+
+exports.pDel = function (model, options) {
+    var client = new JsonClient(couchDbAddress),
+        path = '/' + model._id + '?rev=' + encodeURIComponent(model._rev);
+    return Q.nfcall(client.del.bind(client), path)
+        .then(function (data) {
+            if (data[1].error) throw errors.fromCouchData(data[1]);
+            return data;
+        });
 };
 
 module.exports.Model = Model;

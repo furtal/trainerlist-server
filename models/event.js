@@ -1,7 +1,9 @@
 'use strict';
-var Model = require('./model.js').Model,
+var model = require('./model.js'),
+    Model = model.Model,
     q = require('q'),
-    JsonClient = require('request-json').JsonClient;
+    JsonClient = require('request-json').JsonClient,
+    errors = require('../errors.js');
 
 function Event(initialData) {
     if (arguments.length <= 1) {
@@ -34,6 +36,18 @@ Event.prototype.pByTimestamp = function () {
     return q.nfcall(this.byTimestamp.bind(this));
 };
 
+exports.pEventByTimestamp = function (start, end) {
+    var client = new JsonClient(model.couchDbAddress),
+        path = '/_design/events/_view/by-timestamp',
+        query = '?startkey="' + start.toISOString() + '"&endkey="' + end.toISOString() + '"';
+    q.ninvoke(client, 'get', path + query)
+        .then(function (result) {
+            var data = result[1];
+            if (data.error) throw errors.fromCouchData(data);
+            return data.rows;
+        });
+};
+
 // Do some regex to validate all the fields.
 // Also make sure the required ones are there.
 Event.prototype.validate = function () {
@@ -55,5 +69,9 @@ Event.prototype.validate = function () {
     return true;
 };
 
-module.exports.Event = Event;
+exports.validateEvent = function (event) {
+    return Event.prototype.validate.call(event);
+};
+
+exports.Event = Event;
 
