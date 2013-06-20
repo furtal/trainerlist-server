@@ -7,15 +7,20 @@ function Trainer(initialData) {
 
 Trainer.prototype = new Model();
 
+Trainer.prototype.validate = function () {
+    // TODO remove
+    return exports.validateTrainer(this);
+};
+
 // Do some regex to validate all the fields.
 // Also make sure the required ones are there.
-Trainer.prototype.validate = function () {
+exports.validateTrainer = function (trainer) {
     var isValid,
         validateAName,
-        email = this.email,
-        username = this.username,
-        firstName = this.firstName,
-        lastName = this.lastName;
+        email = trainer.email,
+        username = trainer.username,
+        firstName = trainer.firstName,
+        lastName = trainer.lastName;
 
     // Email
     isValid = !!email &&
@@ -48,10 +53,6 @@ Trainer.prototype.validate = function () {
     isValid = validateAName(firstName) && validateAName(lastName);
 
     return isValid;
-};
-
-exports.validateTrainer = function (trainer) {
-    return Trainer.prototype.validate.call(trainer);
 };
 
 exports.Trainer = Trainer;

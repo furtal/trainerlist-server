@@ -5,6 +5,8 @@ var assert = require('assert'),
     fs = require('fs'),
     errors = require('../errors.js');
 
+var functionCall = Function.prototype.call;
+
 function Model(initialData) {
     if (initialData === Object(initialData)) {
         this.extend(initialData);
@@ -19,7 +21,7 @@ Model.configDb = exports.configDb = function (configFile, next) {
     fs.readFile(configFile, function (err, data) {
         if (err) next(err, null);
         data = JSON.parse(data).couch;
-        Model.prototype.database = couchDbAddress = data.protocol + '://' + data.host + ':' + data.port + '/' + data.database;
+        Model.prototype.database = couchDbAddress = exports.couchDbAddress = data.protocol + '://' + data.host + ':' + data.port + '/' + data.database;
         next(null, data);
     });
 };
@@ -29,7 +31,7 @@ Model.configTestDb = exports.configTestDb = function (configFile, next) {
         var client;
         if (err) return next(err, data);
 
-        client = Model.prototype.getClient();
+        client = new JsonClient(couchDbAddress);
 
         client.del('', function (err, res, body) {
             // Database may not exist yet, ignore errors
@@ -44,68 +46,51 @@ Model.configTestDb = exports.configTestDb = function (configFile, next) {
 };
 
 Model.prototype.getClient = function () {
+    // TODO remove
     assert(this.database);
     return new JsonClient(this.database);
 };
 
-Model.prototype.getPath = function () {
-    assert(this._id);
-    return '/' + this._id;
-};
 
-Model.prototype.save = function (next) {
-    var client = this.getClient(),
-        that = this,
-        then;
-    then = function (err, res, data) {
-        if (err) return next(err);
-        if (data.error === 'conflict') return next(errors.outdated());
-        if (data.error === 'bad_request') return next(errors.invalid(data.error.reason));
-        if (data.error) return next(errors.fromCouchData(data));
-        assert(data.id || data._id);
-        assert(data.rev || data._rev);
-        that._id = data.id || data._id;
-        that._rev = data.rev || data._rev;
-        next(null, data);
-    };
-    if (!this.validate()) {
+function _save(what, validator, next) {
+    var client = new JsonClient(couchDbAddress),
+        then = function (err, res, data) {
+            if (err) return next(err);
+            if (data.error === 'conflict') return next(errors.outdated());
+            if (data.error === 'bad_request') return next(errors.invalid(data.error.reason));
+            if (data.error) return next(errors.fromCouchData(data));
+            assert(data.id || data._id);
+            assert(data.rev || data._rev);
+            what._id = data.id || data._id;
+            what._rev = data.rev || data._rev;
+            next(null, what);
+        };
+    if (validator && !validator(what)) {
         return next(errors.invalid());
     }
-    if (this._id) {
-        client.put(this.getPath(), this, then);
+    if (what._id) {
+        client.put('/' + what._id, what, then);
     } else {
-        client.post('/', this, then);
+        client.post('/', what, then);
     }
+}
+
+Model.prototype.save = function (next) {
+    // TODO remove
+    _save(this, functionCall.bind(this.validate), next);
 };
 
 Model.prototype.pSave = function () {
-    return Q.ninvoke(this.save.bind(this));
+    // TODO remove
+    return Q.nfcall(_save, this, functionCall.bind(this.validate));
 };
 
 exports.pSave = function (model, options) {
-    var client = new JsonClient(couchDbAddress),
-        promise;
-    if (options.validator && !options.validator(model)) {
-        return errors.invalid();
-    }
-    if (model._id) {
-        promise = Q.nfcall(client.put.bind(client), '/' + model._id, model);
-    } else {
-        promise = Q.nfcall(client.post.bind(client), '/', model);
-    }
-    return promise.then(function (result) {
-        var data = result[1];
-        if (data.error === 'conflict') throw errors.outdated();
-        if (data.error === 'bad_request') throw errors.invalid(data.error.reason);
-        if (data.error) throw errors.fromCouchData(data);
-        assert(data.id || data._id);
-        assert(data.rev || data._rev);
-        model._id = data.id || data._id;
-        model._rev = data.rev || data._rev;
-    });
+    return Q.nfcall(_save, model, options && options.validator);
 };
 
 Model.prototype.extend = function (data) {
+    // TODO remove
     // Extend model with data from couchDB.
     var that = this;
     Object.keys(data).forEach(function (member) {
@@ -115,19 +100,17 @@ Model.prototype.extend = function (data) {
 };
 
 Model.prototype.load = function (next) {
-    var client = this.getClient(),
-        that = this;
-    client.get(this.getPath(), function (err, res, body) {
-        if (err) return next(err);
-        if (res.statusCode !== 200) return next(errors.notFound());
-        if (body.error) return next(errors.fromCouchData(body));
-        that.extend(body);
-        next(null, body);
-    });
+    // TODO remove
+    var that = this;
+    exports.pLoad(this._id, {})
+        .then(function (data) {
+            that.extend(data)
+        }).nodeify(next)
 };
 
 Model.prototype.pLoad = function () {
-    return Q.nfcall(this.load.bind(this));
+    // TODO remove
+    return Q.ninvoke(this, 'load');
 };
 
 exports.pLoad = function (id, options) {
@@ -144,17 +127,13 @@ exports.pLoad = function (id, options) {
 };
 
 Model.prototype.del = function (next) {
-    var client = this.getClient(),
-        delUrl = this.getPath() + '?rev=' + encodeURIComponent(this._rev);
-    client.del(delUrl, function (err, res, body) {
-        if (err) return next(err);
-        if (body.error) return next(errors.fromCouchData(body));
-        return next(null, body);
-    });
+    // TODO remove
+    return exports.pDel(this).nodeify(next)
 };
 
-Model.prototype.pDel = function (next) {
-    return Q.nfcall(this.del.bind(this));
+Model.prototype.pDel = function () {
+    // TODO remove
+    return Q.ninvoke(this, 'del');
 };
 
 exports.pDel = function (model, options) {
