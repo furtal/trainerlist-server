@@ -4,7 +4,7 @@
     "dependencies": {
         "express": "3.2.x",
         "request": "2.x",
-        "request-json": "0.3.x",
+        "request-json": "0.3.4",
         "mocha": "1.11.x",
         "q": "0.9.x",
         "couchdb-update-views": "1.0.x"
