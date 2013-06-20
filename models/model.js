@@ -93,7 +93,7 @@ exports.pSave = function (model, options) {
     } else {
         promise = Q.nfcall(client.post.bind(client), '/', model);
     }
-    promise.then(function (result) {
+    return promise.then(function (result) {
         var data = result[1];
         if (data.error === 'conflict') throw errors.outdated();
         if (data.error === 'bad_request') throw errors.invalid(data.error.reason);
@@ -103,7 +103,6 @@ exports.pSave = function (model, options) {
         model._id = data.id || data._id;
         model._rev = data.rev || data._rev;
     });
-    return promise;
 };
 
 Model.prototype.extend = function (data) {

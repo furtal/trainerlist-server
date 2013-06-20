@@ -3,9 +3,12 @@
 var express = require('express'),
     router = new express.Router(),
     Trainer = require('../models/trainer.js').Trainer,
+    model = require('../models/model.js'),
+    trainer = require('../models/trainer.js'),
     errors = require('../errors.js'),
     respondJSON = require('../utils.js').respondJSON;
 
+var trainerOptions = {validator: trainer.validateTrainer};
 
 // create trainer
 router.post('/trainer', function (req, res, next) {
@@ -20,9 +23,7 @@ router.post('/trainer', function (req, res, next) {
 
     trainer.pSave()
         .then(function () {
-            return res
-                .json(trainer)
-                .end();
+            res.json(trainer).end();
         })
         .fail(next);
 });
@@ -34,9 +35,8 @@ router.param('trainerid', function (req, res, next, id) {
     trainer.pLoad()
         .then(function () {
             req.trainer = trainer;
-            return next();
         })
-        .fail(next);
+        .nodeify(next);
 });
 
 // get trainer
