@@ -7,6 +7,7 @@ var model = require('./model.js'),
 
 function Event(initialData) {
     // TODO remove
+    throw new Error
     if (arguments.length <= 1) {
         Model.call(this, initialData); // call the superclass.
     } else {
