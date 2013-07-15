@@ -5,7 +5,7 @@ var model = require('./model.js'),
     errors = require('../errors.js');
 
 
-exports.pEventByTimestamp /* << TODO remove */= exports.pByTimestamp = function (start, end) {
+exports.pByTimestamp = function (start, end) {
     var client = new JsonClient(model.couchDbAddress),
         path = '/_design/events/_view/by-timestamp',
         start = typeof start === 'string' ? start : start.toISOString(),
