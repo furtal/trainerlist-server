@@ -48,7 +48,7 @@ Event.prototype.validate = function () {
 
 // Do some regex to validate all the fields.
 // Also make sure the required ones are there.
-exports.validateEvent = function (event) {
+exports.validateEvent = exports.validate = function (event) {
     // our date exists
     if (event.timestamp === undefined) {
         return false;

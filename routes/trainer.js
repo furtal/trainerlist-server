@@ -12,28 +12,26 @@ var trainerOptions = {validator: trainer.validateTrainer};
 
 // create trainer
 router.post('/trainer', function (req, res, next) {
-    var trainer = new Trainer({
+    var trainer = {
         username: req.body.username,
         email: req.body.email,
         firstName: req.body.firstName,
         lastName: req.body.lastName
-    });
+    };
 
     // TODO setPassword
 
-    trainer.pSave()
-        .then(function () {
-            res.json(trainer).end();
+    model.pSave(trainer, trainerOptions)
+        .then(function (saved) {
+            res.json(saved).end();
         })
         .fail(next);
 });
 
 // set req.trainer to a trainer when there is a :trainerid parameter in the URL.
 router.param('trainerid', function (req, res, next, id) {
-    var trainer = new Trainer();
-    trainer._id = req.params.trainerid;
-    trainer.pLoad()
-        .then(function () {
+    model.pLoad(req.params.trainerid, trainerOptions)
+        .then(function (trainer) {
             req.trainer = trainer;
         })
         .nodeify(next);
@@ -52,7 +50,7 @@ router.post('/trainer/:trainerid', function (req, res, next) {
         return next(errors.outdated());
     }
 
-    trainer.extend({
+    model.extend(trainer, {
         username: req.body.username,
         email: req.body.email,
         firstName: req.body.firstName,
@@ -63,7 +61,7 @@ router.post('/trainer/:trainerid', function (req, res, next) {
         // TODO setPassword
     }
 
-    trainer.pSave()
+    model.pSave(trainer, trainerOptions)
         .then(function () {
             return respondJSON(res, trainer);
         })
@@ -73,7 +71,7 @@ router.post('/trainer/:trainerid', function (req, res, next) {
 // delete
 router.post('/trainer/:trainerid/delete', function (req, res, next) {
     var trainer = req.trainer;
-    trainer.pDel()
+    model.pDel(trainer)
         .then(function () {
             return respondJSON(res, trainer);
         })

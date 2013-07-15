@@ -59,10 +59,9 @@ function _save(what, validator, next) {
             if (data.error === 'conflict') return next(errors.outdated());
             if (data.error === 'bad_request') return next(errors.invalid(data.error.reason));
             if (data.error) return next(errors.fromCouchData(data));
-            assert(data.id || data._id);
-            assert(data.rev || data._rev);
-            what._id = data.id || data._id;
-            what._rev = data.rev || data._rev;
+            assert(data.ok);
+            what._id = data.id;
+            what._rev = data.rev;
             next(null, what);
         };
     if (validator && !validator(what)) {
@@ -89,14 +88,17 @@ exports.pSave = function (model, options) {
     return Q.nfcall(_save, model, options && options.validator);
 };
 
-Model.prototype.extend = function (data) {
+exports.extend = function (what, data) {
     // TODO remove
     // Extend model with data from couchDB.
-    var that = this;
     Object.keys(data).forEach(function (member) {
-        that[member] = data[member];
+        what[member] = data[member];
     });
     // Can I use http://underscorejs.org/#extend ?
+};
+
+Model.prototype.extend = function (data) {
+    exports.extend.call({}, this, data);
 };
 
 Model.prototype.load = function (next) {
@@ -105,6 +107,7 @@ Model.prototype.load = function (next) {
     exports.pLoad(this._id, {})
         .then(function (data) {
             that.extend(data)
+            return that;
         }).nodeify(next)
 };
 
@@ -121,7 +124,7 @@ exports.pLoad = function (id, options) {
                 data = result[1];
             if (res.statusCode === 404) throw errors.notFound();
             if (data.error) throw errors.fromCouchData(data);
-            if (options.validator && !options.validator(data)) throw errors.invalid('the database returned an invalid object');
+            if (options.validator && !options.validator(data)) throw errors.invalid('the database returned an invalid object' + JSON.stringify(data));
             return data;
         });
 };

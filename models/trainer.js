@@ -14,7 +14,7 @@ Trainer.prototype.validate = function () {
 
 // Do some regex to validate all the fields.
 // Also make sure the required ones are there.
-exports.validateTrainer = function (trainer) {
+exports.validateTrainer = exports.validate = function (trainer) {
     var isValid,
         validateAName,
         email = trainer.email,

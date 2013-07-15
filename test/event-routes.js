@@ -3,21 +3,26 @@
 var JsonClient = require('request-json').JsonClient,
     assert = require('assert'),
     Model = require('../models/model.js').Model,
+    model = require('../models/model.js'),
     Trainer = require('../models/trainer.js').Trainer,
+    trainer = require('../models/trainer.js'),
     Event = require('../models/event.js').Event,
+    event = require('../models/event.js'),
     q = require('q'),
     xDays = require('../utils.js').relativeTimestamp;
 
+var trainerOptions = {validator: trainer.validateTrainer};
+var eventOptions = {validator: event.validateEvent};
 
 describe('event app', function () {
     var client = new JsonClient('http://localhost:8082'),
-        trainer = new Trainer({
+        mock = {
             firstName: 'IAm',
             lastName: 'TrainerMan',
             username: 'trainerman',
             email: 'trainer@man.co',
             _id: 'trainerman-id',
-        });
+        };
 
     before(function (done) {
         var server = require('../server.js');
@@ -87,11 +92,11 @@ describe('event app', function () {
                 })*/ // TODO
             ];
         
-        trainer.pSave()
+        model.pSave(mock)
             .then(function () {
                 var promises = [];
                 events.forEach(function (evt) {
-                    promises.push(evt.pSave());
+                    promises.push(model.pSave(evt));  // TODO isn't this map()?
                 });
                 return q.all(promises);
             })
