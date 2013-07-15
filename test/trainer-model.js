@@ -1,7 +1,6 @@
 'use strict';
 
 var assert = require('assert'),
-    Trainer = require('../models/trainer.js').Trainer,
     trainer = require('../models/trainer.js'),
     model = require('../models/model.js');
 
@@ -15,7 +14,7 @@ function trainerFactory(fields) {
     return mock;
 }
 
-describe('Trainer model', function () {
+describe('Trainer model layer', function () {
     it('[testing trainerFactory defaults]', function () {
         var mock = trainerFactory();
         assert.equal(trainer.validate(mock), true);

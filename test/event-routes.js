@@ -2,11 +2,8 @@
 
 var JsonClient = require('request-json').JsonClient,
     assert = require('assert'),
-    Model = require('../models/model.js').Model,
     model = require('../models/model.js'),
-    Trainer = require('../models/trainer.js').Trainer,
     trainer = require('../models/trainer.js'),
-    Event = require('../models/event.js').Event,
     event = require('../models/event.js'),
     q = require('q'),
     xDays = require('../utils.js').relativeTimestamp;
@@ -26,7 +23,7 @@ describe('event app', function () {
 
     before(function (done) {
         var server = require('../server.js');
-        Model.configTestDb(__dirname + '/../couchdb-config-test.json', function () {
+        model.configTestDb(__dirname + '/../couchdb-config-test.json', function () {
             server.startListening(8082, done);
         });
 

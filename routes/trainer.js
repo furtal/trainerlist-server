@@ -2,7 +2,6 @@
 
 var express = require('express'),
     router = new express.Router(),
-    Trainer = require('../models/trainer.js').Trainer,
     model = require('../models/model.js'),
     trainer = require('../models/trainer.js'),
     errors = require('../errors.js'),

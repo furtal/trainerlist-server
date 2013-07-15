@@ -3,7 +3,7 @@
 
 var express = require('express'),
     app = express(),
-    Model = require('./models/model.js').Model,
+    model = require('./models/model.js'),
     respondJSON = require('./utils.js').respondJson,
     errorHandler = require('./errors.js').errorHandler;
 
@@ -94,7 +94,7 @@ function startListening (port, next) {
 // If we are the main module (I.E. being called directly, run the server.)
 if (require.main === module) {
     // Configure the database
-    Model.configDb(__dirname + '/couchdb-config.json', function () {
+    model.configDb(__dirname + '/couchdb-config.json', function () {
         startListening(8080, function () {
             console.log('trainerlist server listening on port 8080');
         });

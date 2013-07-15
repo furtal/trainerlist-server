@@ -4,8 +4,6 @@ var express = require('express'),
     router = new express.Router(),
     model = require('../models/model.js'),
     event = require('../models/event.js'),
-    Event = require('../models/event.js').Event,
-    Trainer = require('../models/trainer.js').Trainer,
     trainer = require('../models/trainer.js'),
     xDays = require('../utils.js').relativeTimestamp;
 

@@ -1,16 +1,4 @@
 'use strict';
-var Model = require('./model.js').Model;
-
-function Trainer(initialData) {
-    Model.call(this, initialData); // call the superclass.
-}
-
-Trainer.prototype = new Model();
-
-Trainer.prototype.validate = function () {
-    // TODO remove
-    return exports.validateTrainer(this);
-};
 
 // Do some regex to validate all the fields.
 // Also make sure the required ones are there.
@@ -55,4 +43,3 @@ exports.validateTrainer = exports.validate = function (trainer) {
     return isValid;
 };
 
-exports.Trainer = Trainer;

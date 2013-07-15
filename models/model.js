@@ -5,29 +5,20 @@ var assert = require('assert'),
     fs = require('fs'),
     errors = require('../errors.js');
 
-var functionCall = Function.prototype.call;
-
-function Model(initialData) {
-    if (initialData === Object(initialData)) {
-        this.extend(initialData);
-    } else if (initialData) {
-        this._id = initialData;
-    }
-}
 
 exports.couchDbAddress = '';
 
-Model.configDb = exports.configDb = function (configFile, next) {
+exports.configDb = function (configFile, next) {
     fs.readFile(configFile, function (err, data) {
         if (err) next(err, null);
         data = JSON.parse(data).couch;
-        Model.prototype.database = exports.couchDbAddress = data.protocol + '://' + data.host + ':' + data.port + '/' + data.database;
+        exports.couchDbAddress = data.protocol + '://' + data.host + ':' + data.port + '/' + data.database;
         next(null, data);
     });
 };
 
-Model.configTestDb = exports.configTestDb = function (configFile, next) {
-    Model.configDb(configFile, function (err, data) {
+exports.configTestDb = function (configFile, next) {
+    exports.configDb(configFile, function (err, data) {
         var client;
         if (err) return next(err, data);
 
@@ -44,13 +35,6 @@ Model.configTestDb = exports.configTestDb = function (configFile, next) {
         });
     });
 };
-
-Model.prototype.getClient = function () {
-    // TODO remove
-    assert(this.database);
-    return new JsonClient(this.database);
-};
-
 
 function _save(what, validator, next) {
     var client = new JsonClient(exports.couchDbAddress),
@@ -74,16 +58,6 @@ function _save(what, validator, next) {
     }
 }
 
-Model.prototype.save = function (next) {
-    // TODO remove
-    _save(this, functionCall.bind(this.validate), next);
-};
-
-Model.prototype.pSave = function () {
-    // TODO remove
-    return Q.nfcall(_save, this, functionCall.bind(this.validate));
-};
-
 exports.pSave = function (model, options) {
     return Q.nfcall(_save, model, options && options.validator);
 };
@@ -94,26 +68,6 @@ exports.extend = function (what, data) {
         what[member] = data[member];
     });
     return what;
-};
-
-Model.prototype.extend = function (data) {
-    // TODO remove
-    exports.extend.call({}, this, data);
-};
-
-Model.prototype.load = function (next) {
-    // TODO remove
-    var that = this;
-    exports.pLoad(this._id, {})
-        .then(function (data) {
-            that.extend(data)
-            return that;
-        }).nodeify(next)
-};
-
-Model.prototype.pLoad = function () {
-    // TODO remove
-    return Q.ninvoke(this, 'load');
 };
 
 exports.pLoad = function (id, options) {
@@ -129,16 +83,6 @@ exports.pLoad = function (id, options) {
         });
 };
 
-Model.prototype.del = function (next) {
-    // TODO remove
-    return exports.pDel(this).nodeify(next)
-};
-
-Model.prototype.pDel = function () {
-    // TODO remove
-    return Q.ninvoke(this, 'del');
-};
-
 exports.pDel = function (model, options) {
     var client = new JsonClient(exports.couchDbAddress),
         path = '/' + model._id + '?rev=' + encodeURIComponent(model._rev);
@@ -148,5 +92,3 @@ exports.pDel = function (model, options) {
             return data;
         });
 };
-
-module.exports.Model = Model;

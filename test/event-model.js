@@ -1,8 +1,6 @@
 'use strict';
 var assert = require('assert'),
-    Event = require('../models/event.js').Event,
     event = require('../models/event.js'),
-    Model = require('../models/model.js').Model,
     model = require('../models/model.js'),
     q = require('q'),
     xDays = require('../utils.js').relativeTimestamp;
@@ -31,7 +29,7 @@ describe('Event model validations', function () {
 
 describe('pByTimestamp', function () {
     before(function (done) {
-        Model.configTestDb(
+        model.configTestDb(
             __dirname + '/../couchdb-config-test.json',
             done);
     });

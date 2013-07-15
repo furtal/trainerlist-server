@@ -1,33 +1,9 @@
 'use strict';
 var model = require('./model.js'),
-    Model = model.Model,
     Q = require('q'),
     JsonClient = require('request-json').JsonClient,
     errors = require('../errors.js');
 
-function Event(initialData) {
-    // TODO remove
-    throw new Error
-    if (arguments.length <= 1) {
-        Model.call(this, initialData); // call the superclass.
-    } else {
-        Model.call(this);
-        this.start = arguments[0].toISOString();
-        this.end = arguments[1].toISOString();
-    }
-}
-
-Event.prototype = new Model();
-
-Event.prototype.byTimestamp = function (next) {
-    // TODO remove
-    return this.pByTimestamp().nodeify(next);
-};
-
-Event.prototype.pByTimestamp = function () {
-    // TODO remove
-    return exports.pByTimestamp(this.start, this.end);
-};
 
 exports.pEventByTimestamp /* << TODO remove */= exports.pByTimestamp = function (start, end) {
     var client = new JsonClient(model.couchDbAddress),
@@ -42,11 +18,6 @@ exports.pEventByTimestamp /* << TODO remove */= exports.pByTimestamp = function 
                 return row.value;
             });
         });
-};
-
-Event.prototype.validate = function () {
-    // TODO remove
-    return exports.validateEvent(this);
 };
 
 // Do some regex to validate all the fields.
@@ -69,6 +40,4 @@ exports.validateEvent = exports.validate = function (event) {
 
     return true;
 };
-
-exports.Event = Event;
 
