@@ -25,12 +25,14 @@ Event.prototype.byTimestamp = function (next) {
 
 Event.prototype.pByTimestamp = function () {
     // TODO remove
-    return exports.pEventByTimestamp(this.start, this.end);
+    return exports.pByTimestamp(this.start, this.end);
 };
 
-exports.pEventByTimestamp = function (start, end) {
+exports.pEventByTimestamp /* << TODO remove */= exports.pByTimestamp = function (start, end) {
     var client = new JsonClient(model.couchDbAddress),
         path = '/_design/events/_view/by-timestamp',
+        start = typeof start === 'string' ? start : start.toISOString(),
+        end = typeof end === 'string' ? end : end.toISOString(),
         query = '?startkey="' + start + '"&endkey="' + end + '"';
     return Q.ninvoke(client, 'get', path + query)
         .then(function (result) {

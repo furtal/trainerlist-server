@@ -15,13 +15,13 @@ function Model(initialData) {
     }
 }
 
-var couchDbAddress = exports.couchDbAddress = '';
+exports.couchDbAddress = '';
 
 Model.configDb = exports.configDb = function (configFile, next) {
     fs.readFile(configFile, function (err, data) {
         if (err) next(err, null);
         data = JSON.parse(data).couch;
-        Model.prototype.database = couchDbAddress = exports.couchDbAddress = data.protocol + '://' + data.host + ':' + data.port + '/' + data.database;
+        Model.prototype.database = exports.couchDbAddress = data.protocol + '://' + data.host + ':' + data.port + '/' + data.database;
         next(null, data);
     });
 };
@@ -31,7 +31,7 @@ Model.configTestDb = exports.configTestDb = function (configFile, next) {
         var client;
         if (err) return next(err, data);
 
-        client = new JsonClient(couchDbAddress);
+        client = new JsonClient(exports.couchDbAddress);
 
         client.del('', function (err, res, body) {
             // Database may not exist yet, ignore errors
@@ -53,7 +53,7 @@ Model.prototype.getClient = function () {
 
 
 function _save(what, validator, next) {
-    var client = new JsonClient(couchDbAddress),
+    var client = new JsonClient(exports.couchDbAddress),
         then = function (err, res, data) {
             if (err) return next(err);
             if (data.error === 'conflict') return next(errors.outdated());
@@ -89,15 +89,15 @@ exports.pSave = function (model, options) {
 };
 
 exports.extend = function (what, data) {
-    // TODO remove
     // Extend model with data from couchDB.
     Object.keys(data).forEach(function (member) {
         what[member] = data[member];
     });
-    // Can I use http://underscorejs.org/#extend ?
+    return what;
 };
 
 Model.prototype.extend = function (data) {
+    // TODO remove
     exports.extend.call({}, this, data);
 };
 
@@ -117,7 +117,7 @@ Model.prototype.pLoad = function () {
 };
 
 exports.pLoad = function (id, options) {
-    var client = new JsonClient(couchDbAddress);
+    var client = new JsonClient(exports.couchDbAddress);
     return Q.nfcall(client.get.bind(client), '/' + id)  // TODO try invoke
         .then(function (result) {
             var res = result[0],
@@ -140,7 +140,7 @@ Model.prototype.pDel = function () {
 };
 
 exports.pDel = function (model, options) {
-    var client = new JsonClient(couchDbAddress),
+    var client = new JsonClient(exports.couchDbAddress),
         path = '/' + model._id + '?rev=' + encodeURIComponent(model._rev);
     return Q.nfcall(client.del.bind(client), path)
         .then(function (data) {

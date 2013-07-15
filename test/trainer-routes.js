@@ -2,7 +2,7 @@
 
 var JsonClient = require('request-json').JsonClient,
     assert = require('assert'),
-    Model = require('../models/model.js').Model;
+    model = require('../models/model.js');
 
 function trainerFactory(data) {
     var defaults = {
@@ -25,7 +25,7 @@ describe('Trainer app', function () {
 
     before(function (done) {
         var server = require('../server.js');
-        Model.configTestDb(__dirname + '/../couchdb-config-test.json', function () {
+        model.configTestDb(__dirname + '/../couchdb-config-test.json', function () {
             server.startListening(8081, done);
         });
     });

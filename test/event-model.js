@@ -1,37 +1,35 @@
 'use strict';
 var assert = require('assert'),
     Event = require('../models/event.js').Event,
+    event = require('../models/event.js'),
     Model = require('../models/model.js').Model,
+    model = require('../models/model.js'),
     q = require('q'),
     xDays = require('../utils.js').relativeTimestamp;
 
 describe('Event model validations', function () {
     it('should validate required date field', function () {
-        var ev = new Event({
+        var ev = {
             timestamp: new Date().toISOString(),
-        });
+        };
 
-        assert(ev.validate());
-
+        assert(event.validate(ev));
         ev.timestamp = undefined;
-
-        assert(!ev.validate());
+        assert(!event.validate(ev));
     });
 
     it('should not accept anything that is not a valid ISO timestamp', function () {
-        var ev = new Event({
+        var ev = {
             timestamp: +new Date()
-        });
+        };
 
-        assert(!ev.validate());
-
+        assert(!event.validate(ev));
         ev.timestamp = '12-12-1234T12';
-
-        assert(!ev.validate());
+        assert(!event.validate(ev));
     });
 });
 
-describe('Event.pByTimestamp', function () {
+describe('pByTimestamp', function () {
     before(function (done) {
         Model.configTestDb(
             __dirname + '/../couchdb-config-test.json',
@@ -61,35 +59,30 @@ describe('Event.pByTimestamp', function () {
 
     before(function (done) {
         q.all([
-            new Event({timestamp: xDays(1), description: '1'}).pSave(),
-            new Event({timestamp: xDays(2), description: '2'}).pSave()
+            model.pSave({timestamp: xDays(1), description: '1'}),
+            model.pSave({timestamp: xDays(2), description: '2'})
         ])
-        .then(function () {
-            done();
-        });
+        .nodeify(done);
     });
 
     it('lets us get lists of events by timestamp', function (done) {
         var now = new Date(),
-            time30HoursFromNow = new Date(),
-            query;
+            time30HoursFromNow = new Date();
         time30HoursFromNow.setHours(time30HoursFromNow.getHours() + 30);
 
-        query = new Event(now, time30HoursFromNow);
-        query.pByTimestamp().then(function (events) {
-            assert.equal(events.length, 1);
-            assert.equal(events[0].description, '1');
-            done();
-        });
+        event.pByTimestamp(now, time30HoursFromNow)
+            .then(function (events) {
+                assert.equal(events.length, 1);
+                assert.equal(events[0].description, '1');
+            }).nodeify(done);
     });
 
     it('gets by timestamp, sorted', function (done) {
-        var query = new Event(xDays(0), xDays(10));
-        query.pByTimestamp().then(function (events) {
-            assert.equal(events[0].description, '1');
-            assert.equal(events[1].description, '2');
-            done();
-        });
+        event.pByTimestamp(xDays(0), xDays(10))
+            .then(function (events) {
+                assert.equal(events[0].description, '1');
+                assert.equal(events[1].description, '2');
+            }).nodeify(done);
     });
 });
 

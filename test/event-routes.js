@@ -55,50 +55,46 @@ describe('event app', function () {
 
     before(function (done) {
         var events = [
-                new Event({
+                {
                     description: 'event far behind',
                     timestamp: xDays(-32),
                     trainer: 'trainerman-id',
-                }),
-                new Event({
+                },
+                {
                     description: 'past event 1',
                     timestamp: xDays(-3),
                     trainer: 'trainerman-id',
-                }),
-                new Event({
+                },
+                {
                     description: 'past event 2',
                     timestamp: xDays(-6),
                     trainer: 'trainerman-id',
-                }),
-                new Event({
+                },
+                {
                     description: 'event occurring now',
                     timestamp: new Date().toISOString(),
                     trainer: 'trainerman-id',
-                }),
-                new Event({
+                },
+                {
                     description: 'event tomorrow',
                     timestamp: xDays(1),
                     trainer: 'trainerman-id',
-                }),
-                new Event({
+                },
+                {
                     description: 'event 2 days from now',
                     timestamp: xDays(2),
                     trainer: 'trainerman-id',
-                }),
-                /*new Event({
+                },
+                /*{
                     description: 'event of someone else',
                     timestamp: xDays(0),
                     trainer: 'someone-else',
-                })*/ // TODO
+                }*/ // TODO
             ];
         
         model.pSave(mock)
             .then(function () {
-                var promises = [];
-                events.forEach(function (evt) {
-                    promises.push(model.pSave(evt));  // TODO isn't this map()?
-                });
-                return q.all(promises);
+                return q.all(events.map(model.pSave));
             })
             .then(function () {
                 done();
@@ -142,25 +138,18 @@ describe('event app', function () {
     });
 
     it('allows to create events', function (done) {
-        var evt = new Event({
+        var evt = {
             timestamp: new Date(),
             description: 'some description',
-        });
+        };
         client.post('/events/trainerman-id/create', evt, function (err, res, data) {
-            var created;
             assert(!err, err);
             assert.equal(res.statusCode, 200, res.statusCode);
-
-            created = new Event(data._id)
 
             assert.equal(data.timestamp, evt.timestamp.toISOString());
             assert.equal(data.description, evt.description);
 
-            created.pLoad()
-                .then(function () {
-                    done();
-                })
-                .fail(done);
+            model.pLoad(data._id, eventOptions).nodeify(done);
         })
     });
 });

@@ -2,26 +2,31 @@
 
 var express = require('express'),
     router = new express.Router(),
+    model = require('../models/model.js'),
+    event = require('../models/event.js'),
     Event = require('../models/event.js').Event,
     Trainer = require('../models/trainer.js').Trainer,
+    trainer = require('../models/trainer.js'),
     xDays = require('../utils.js').relativeTimestamp;
 
+var noop = function () {};
+var trainerOptions = {validator: trainer.validate};
+var eventOptions = {validator: event.validate};
+
 router.param('user_id', function (req, res, next, userId) {
-    req.trainer = new Trainer(userId);
-    req.trainer.pLoad()
-        .then(function () {
-            next();
+    model.pLoad(userId, trainerOptions)
+        .then(function (loaded) {
+            req.trainer = loaded;
         })
-        .fail(next);
+        .nodeify(next);
 });
 
 router.param('event_id', function (req, res, next, eventId) {
-    req.event = new Event(eventId);
-    req.event.pLoad()
-        .then(function () {
-            next();
+    model.pLoad(eventId, eventOptions)
+        .then(function (loaded) {
+            req.event = loaded;
         })
-        .fail(next);
+        .nodeify(next);
 });
 
 // upcoming events for the next 30 days
@@ -33,7 +38,7 @@ router.get('/events/upcoming/:user_id', function (req, res, next) {
     start.setHours(start.getHours() - 1);
 
     // Gets events between `start` and `end`
-    new Event(start, end).pByTimestamp()
+    event.pByTimestamp(start, end)
         .then(function (events) {
             return res
                 .json(events)
@@ -47,8 +52,8 @@ router.get('/events/past/:user_id', function (req, res, next) {
     var nDays = 30, // TODO read above
         start = xDays(-nDays),
         end = new Date();
-
-    new Event(start, end).pByTimestamp()
+    
+    event.pByTimestamp(start, end)
         .then(function (events) {
             events.reverse();
             return res
@@ -60,11 +65,10 @@ router.get('/events/past/:user_id', function (req, res, next) {
 
 // create event
 router.post('/events/:user_id/create', function (req, res, next) {
-    var evt = new Event(req.body);
-    return evt.pSave()
-        .then(function () {
+    return model.pSave(req.body)  // TODO pluck correct keys
+        .then(function (saved) {
             return res
-                .json(evt)
+                .json(saved)
                 .end();
         })
         .fail(next);
